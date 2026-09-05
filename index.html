@@ -71,6 +71,25 @@
             cursor: pointer;
             color: #334155;
         }
+        .featured-service {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 1.5px solid #3b82f6 !important;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-weight: bold !important;
+            color: #1e40af !important;
+            box-shadow: 0 2px 5px rgba(59, 130, 246, 0.15);
+        }
+        .badge {
+            background: #2563eb;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 4px;
+            vertical-align: middle;
+            font-weight: normal;
+        }
         .duvet-section {
             border: 1px solid #cbd5e1;
             padding: 12px;
@@ -84,22 +103,6 @@
             gap: 10px;
             align-items: center;
             margin-bottom: 6px;
-        }
-        .tax-box {
-            background: #e0f2fe;
-            padding: 10px 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border: 1px solid #bae6fd;
-        }
-        .tax-box label {
-            font-size: 14px;
-            color: #0369a1;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 0;
         }
         .tip-container { display: flex; gap: 8px; margin-bottom: 15px; }
         .tip-btn {
@@ -202,16 +205,36 @@
         <label style="color: #1e3a8a; margin-bottom: 8px; font-size: 14px;">Select Service Type:</label>
         <div style="display: flex; flex-direction: column; gap: 8px;">
             <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 8px; color: #1e3a8a;">
-                <input type="radio" name="serviceType" id="typePickup" value="pickup" checked onchange="toggleServiceType()"> Pick Up & Delivery service (+$10.00)
+                <input type="radio" name="serviceType" id="typePickup" value="pickup" checked onchange="toggleServiceType()"> Pick Up & Delivery service (Location-based fee)
             </label>
             <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 8px; color: #1e3a8a;">
                 <input type="radio" name="serviceType" id="typeDropoff" value="dropoff" onchange="toggleServiceType()"> Self Drop-off (Store Hours: 08:00 AM - 11:30 PM)
             </label>
     </div>
     </div>
-    <div class="group" id="addressGroup" style="margin-top: 10px;">
-        <label for="pickupAddress">Pick Up Address</label>
-        <input type="text" id="pickupAddress" placeholder="Enter your full street address, unit, city">
+    <div id="addressGroup">
+        <div class="group" style="margin-top: 10px;">
+            <label for="pickupCity">Pick Up City / Area</label>
+            <select id="pickupCity" onchange="handleCityChange()">
+                <option value="10">Niagara Falls (Standard $10.00)</option>
+                <option value="20">St. Catharines (+$20.00)</option>
+                <option value="25">Welland (+$25.00)</option>
+                <option value="30">Pelham (+$30.00)</option>
+                <option value="30">Port Colborne (+$30.00)</option>
+                <option value="30">Fort Erie (+$30.00)</option>
+                <option value="25">Niagara-on-the-Lake (+$25.00)</option>
+            </select>
+        </div>
+        <div class="group" id="nfFreePickupDiv" style="background: #f0fdf4; padding: 10px; border-radius: 6px; border: 1px solid #bbf7d0;">
+            <label style="color: #166534; display: flex; align-items: flex-start; gap: 8px; margin: 0; cursor: pointer; font-weight: normal; font-size: 13px;">
+                <input type="checkbox" id="nfFreePickup" style="margin-top: 2px;">
+                <span><b>First Pick-up Free</b> (Exclusive for Niagara Falls resident houses only; excludes hotels, apartments, condos, commercial - standard fee amount will be deducted or adjusted in the total price if ineligible)</span>
+            </label>
+        </div>
+        <div class="group" style="margin-top: 10px;">
+            <label for="pickupAddress">Street Address & Unit</label>
+            <input type="text" id="pickupAddress" placeholder="Enter your full street address, unit">
+        </div>
     </div>
     <div id="bookingScheduleSection">
         <div class="group">
@@ -220,17 +243,22 @@
         </div>
         <div class="group">
             <label for="bookTime">Booking Time Slot (Daily: 10:00 AM - 07:00 PM)</label>
-            <select id="bookTime">
+            <select id="bookTime" onchange="updateApproxReadyTime()">
                 <option>10:00 AM</option><option>11:00 AM</option><option>11:30 AM</option><option>12:00 PM</option>
                 <option>01:00 PM</option><option>02:00 PM</option><option>03:00 PM</option><option>04:00 PM</option>
                 <option>05:00 PM</option><option>06:00 PM</option><option>07:00 PM (Latest)</option>
             </select>
         </div>
+        <div style="background: #eef2ff; padding: 10px; border-radius: 6px; border: 1px solid #c7d2fe; margin-bottom: 12px;">
+            <div style="font-size: 11px; color: #1e3a8a; font-weight: bold; text-transform: uppercase;">Approximate Ready Time</div>
+            <div id="liveReadyTime" style="font-size: 14px; color: #1d4ed8; font-weight: bold; margin-top: 2px;">Same day (8:00 PM - 10:00 PM)</div>
+        </div>
     </div>
     <div id="dropoffNoticeSection" style="background: #f8fafc; padding: 12px; border-radius: 6px; border: 1px solid #cbd5e1; margin-top: 10px; display: none;">
         <div style="font-weight: bold; color: #0f2b46; font-size: 13px; margin-bottom: 4px;">Self Drop-off Info:</div>
         <div style="font-size: 12px; color: #475569; line-height: 1.4;">
-            Since you are dropping off your laundry yourself, no booking slot is required. You can drop off your items daily between <b>08:00 AM and 11:30 PM</b>. Please follow the instructions written on the store door.
+            No booking slot is required for self drop-off. You can drop off your items daily between <b>08:00 AM and 11:30 PM</b>. Please follow the instructions written on the store door.
+            <div style="margin-top: 6px; font-weight: bold; color: #1d4ed8;">Approximate Ready Time: Ready in 24 hours from drop-off</div>
         </div>
     </div>
 
@@ -258,13 +286,17 @@
     </div>
     <div class="group" style="background: #f0fdf4; padding: 10px; border-radius: 6px; border: 1px solid #bbf7d0;">
         <label style="color: #166534; display: flex; align-items: center; gap: 8px; margin: 0; cursor: pointer;">
-            <input type="checkbox" id="hangDry"> Hang Dry (Free, but requires +2 days turnaround time)
+            <input type="checkbox" id="hangDry" onchange="updateApproxReadyTime()"> Hang Dry (Free, but requires +2 days turnaround time)
         </label>
     </div>
     <label>Additional services · Price per 5 lb</label>
     <div class="service-grid">
-        <label><input type="checkbox" class="srv" value="3" data-name="Softener"> Softener · $3</label>
-        <label><input type="checkbox" class="srv" value="5" data-name="Folding"> Folding · $5</label>
+        <label class="featured-service">
+            <input type="checkbox" class="srv" value="3" data-name="Softener"> Softener · $3 <span class="badge">Popular</span>
+        </label>
+        <label class="featured-service">
+            <input type="checkbox" class="srv" value="5" data-name="Folding"> Folding · $5 <span class="badge" style="background: #059669;">Best Choice</span>
+        </label>
         <label><input type="checkbox" class="srv" value="5" data-name="Stain removal"> Stain removal · $5</label>
         <label><input type="checkbox" class="srv" value="4" data-name="Scent boost"> Scent boost · $4</label>
         <label><input type="checkbox" class="srv" value="4" data-name="Odor removal"> Odor removal · $4</label>
@@ -294,7 +326,6 @@
         <button type="button" class="tip-btn active" onclick="setTip(5, this)">$5.00</button>
         <button type="button" class="tip-btn" onclick="setTip(10, this)">$10.00</button>
     </div>
-    <div class="tax-box"><label><input type="checkbox" id="applyTax" checked> Apply 13% HST tax</label></div>
     <button class="book-btn" type="button" onclick="calculateAndBook()">Confirm & Generate Receipt</button>
 
     <div id="result" aria-live="polite">
@@ -309,7 +340,7 @@
         <div class="total-box"><div>FINAL TOTAL</div><div class="total" id="finalPrice">$0.00</div></div>
         <div class="action-buttons">
             <button class="pdf-btn" type="button" onclick="window.print()">Save PDF</button>
-            <button class="share-btn" type="button" onclick="sharePDFReceipt()">Share Receipt</button>
+            <button class="share-btn" type="button" onclick="sharePDFReceipt()">Share</button>
         </div>
     </div>
 </div>
@@ -328,6 +359,14 @@
         document.getElementById('addressGroup').style.display = isPickup ? 'block' : 'none';
         document.getElementById('bookingScheduleSection').style.display = isPickup ? 'block' : 'none';
         document.getElementById('dropoffNoticeSection').style.display = isPickup ? 'none' : 'block';
+        updateApproxReadyTime();
+    }
+
+    function handleCityChange() {
+        const citySelect = document.getElementById('pickupCity');
+        const isNiagaraFalls = citySelect.selectedIndex === 0;
+        document.getElementById('nfFreePickupDiv').style.display = isNiagaraFalls ? 'block' : 'none';
+        if (!isNiagaraFalls) document.getElementById('nfFreePickup').checked = false;
     }
 
     function parseTimeToFloat(time) {
@@ -339,24 +378,40 @@
         return hour + minutes / 60;
     }
 
+    function updateApproxReadyTime() {
+        const isPickup = document.getElementById('typePickup').checked;
+        const time = document.getElementById('bookTime').value;
+        const isHangDry = document.getElementById('hangDry').checked;
+        let text = isPickup
+            ? (parseTimeToFloat(time) < 11.5 ? 'Same day (8:00 PM - 10:00 PM)' : 'Within 24 hours (Next Day)')
+            : 'Ready in 24 hours from drop-off';
+        if (isHangDry) text += ' [Hang Dry: +2 Days Turnaround]';
+        document.getElementById('liveReadyTime').innerText = text;
+    }
+
+    updateApproxReadyTime();
+
     function calculateAndBook() {
         const name = document.getElementById('custName').value.trim() || 'Valued Customer';
         const phone = document.getElementById('custPhone').value.trim();
         const isPickup = document.getElementById('typePickup').checked;
+        const citySelect = document.getElementById('pickupCity');
+        const cityName = citySelect.options[citySelect.selectedIndex].text.split(' (')[0];
+        let pickupCost = isPickup ? parseFloat(citySelect.value) : 0;
+        const isNFFree = document.getElementById('nfFreePickup').checked;
+        if (isPickup && citySelect.selectedIndex === 0 && isNFFree) pickupCost = 0;
         const address = document.getElementById('pickupAddress').value.trim();
         const paymentMethod = document.getElementById('paymentMethod').value;
         const notes = document.getElementById('specialNotes').value.trim();
         const isPetOwner = document.getElementById('petOwner').checked;
         const isHangDry = document.getElementById('hangDry').checked;
         const weight = Math.max(0, parseFloat(document.getElementById('weight').value) || 0);
-        const pickup = isPickup ? 10 : 0;
         const iron = Math.max(0, parseInt(document.getElementById('iron').value, 10) || 0);
         const hangers = Math.max(0, parseInt(document.getElementById('hangers').value, 10) || 0);
         const shoes = Math.max(0, parseInt(document.getElementById('shoes').value, 10) || 0);
         const single = Math.max(0, parseInt(document.getElementById('dvS').value, 10) || 0);
         const queen = Math.max(0, parseInt(document.getElementById('dvQ').value, 10) || 0);
         const king = Math.max(0, parseInt(document.getElementById('dvK').value, 10) || 0);
-        const useTax = document.getElementById('applyTax').checked;
 
         if (!phone) {
             alert('Please enter your phone number.');
@@ -375,14 +430,13 @@
         const receiptNumber = Math.floor(10000 + Math.random() * 90000);
         const today = new Date().toISOString().split('T')[0];
 
-        let readyTimeText = isPickup
-            ? (parseTimeToFloat(time) < 11.5 ? 'Same day (8:00 PM - 10:00 PM)' : 'Within 24 hours (Next Day)')
-            : 'Ready in 24 hours from drop-off';
-        if (isHangDry) readyTimeText += ' [Hang Dry: +2 Days Turnaround]';
+        const readyTimeText = document.getElementById('liveReadyTime').innerText;
 
-        let metaHtml = `Receipt No: ${receiptNumber} | Date: ${today}<br><b>Customer:</b> ${escapeHtml(name)} (${escapeHtml(phone)})<br><b>Service Type:</b> ${isPickup ? 'Pick Up & Delivery' : 'Self Drop-off (Store Hours: 08:00 AM - 11:30 PM)'}<br>`;
+        let serviceDescription = isPickup ? `Pick Up & Delivery (${cityName})` : 'Self Drop-off (Store Hours: 08:00 AM - 11:30 PM)';
+        if (isPickup && pickupCost === 0 && isNFFree) serviceDescription += ' [Free First Pick-up - Niagara Falls Resident]';
+        let metaHtml = `Receipt No: ${receiptNumber} | Date: ${today}<br><b>Customer:</b> ${escapeHtml(name)} (${escapeHtml(phone)})<br><b>Service Type:</b> ${escapeHtml(serviceDescription)}<br>`;
         if (isPickup) {
-            metaHtml += `<b>Pick Up Address:</b> ${escapeHtml(address)}<br><b>Scheduled Pick Up:</b> ${escapeHtml(date)} at ${escapeHtml(time)}<br>`;
+            metaHtml += `<b>Pick Up Address:</b> ${escapeHtml(address)}, ${escapeHtml(cityName)}<br><b>Scheduled Pick Up:</b> ${escapeHtml(date)} at ${escapeHtml(time)}<br>`;
         } else {
             metaHtml += '<b>Instruction:</b> Follow instructions on store door<br>';
         }
@@ -391,7 +445,11 @@
         let detailsHtml = '';
         const wash = 10 + (weight > 10 ? Math.ceil((weight - 10) / 5) * 5 : 0);
         detailsHtml += receiptItem(`Base wash (${weight} lbs)`, wash);
-        if (pickup) detailsHtml += receiptItem('Pick up & delivery service', pickup);
+        if (isPickup) {
+            detailsHtml += pickupCost > 0
+                ? receiptItem(`Pick up & delivery (${cityName})`, pickupCost)
+                : `<div class="receipt-item" style="color: #166534;"><span>Pick up & delivery (${escapeHtml(cityName)} - First Free Promo)</span><span>$0.00</span></div>`;
+        }
 
         const multiplier = Math.ceil(weight / 5);
         let servicesTotal = 0;
@@ -423,16 +481,20 @@
             }
         });
 
-        const subtotal = wash + pickup + servicesTotal + extrasTotal;
+        const subtotal = wash + pickupCost + servicesTotal + extrasTotal;
         detailsHtml += `<div class="receipt-item" style="border-top: 1px dashed #cbd5e1; margin-top: 6px; padding-top: 6px; font-weight: bold;"><span>Subtotal</span><span>$${subtotal.toFixed(2)}</span></div>`;
-        const tax = useTax ? subtotal * 0.13 : 0;
-        detailsHtml += receiptItem(useTax ? 'HST tax (13%)' : 'Tax', useTax ? tax : 'Tax-free ($0.00)');
+        const tax = subtotal * 0.13;
+        detailsHtml += receiptItem('HST tax (13%)', tax);
         if (selectedTip > 0) detailsHtml += receiptItem('Driver/Staff Tip', selectedTip);
         if (notes) detailsHtml += `<div style="margin-top: 8px; font-size: 12px; color: #475569; background: #f8fafc; padding: 6px; border-radius: 4px;"><b>Special Requests:</b> ${escapeHtml(notes)}</div>`;
 
         document.getElementById('receiptDetails').innerHTML = detailsHtml;
         document.getElementById('finalPrice').innerText = '$' + (subtotal + tax + selectedTip).toFixed(2);
         document.getElementById('result').style.display = 'block';
+        const plainTextReceipt = `Wildrose Laundry Booking & Receipt\n-----------------------------------\n${document.getElementById('receiptMeta').innerText}\n\n${document.getElementById('receiptDetails').innerText}\n\nFINAL TOTAL: ${document.getElementById('finalPrice').innerText}`;
+        const subject = encodeURIComponent('New Booking / Service Order - Wildrose Laundry');
+        const body = encodeURIComponent(plainTextReceipt);
+        window.location.href = `mailto:info@wildroselaundry.ca?subject=${subject}&body=${body}`;
     }
 
     function receiptItem(label, value) {
