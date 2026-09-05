@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaymentCalcu - Wildrose Laundry</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f7ff;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 550px;
+            margin: auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 4px 20px rgba(15, 43, 70, 0.12);
+            border-top: 6px solid #1d4ed8;
+        }
+        h2 {
+            text-align: center;
+            color: #0f2b46;
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+        .section-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #1e3a8a;
+            margin: 18px 0 8px 0;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 4px;
+        }
+        .group { margin-bottom: 12px; }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: #334155;
+        }
+        input[type="text"], input[type="number"], input[type="tel"], select, textarea, input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+            background: #f8fafc;
+        }
+        textarea { resize: vertical; height: 70px; }
+        .service-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .service-grid label {
+            font-weight: normal;
+            font-size: 13px;
+            cursor: pointer;
+            color: #334155;
+        }
+        .duvet-section {
+            border: 1px solid #cbd5e1;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            background: #f8fafc;
+        }
+        .duvet-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .tax-box {
+            background: #e0f2fe;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #bae6fd;
+        }
+        .tax-box label {
+            font-size: 14px;
+            color: #0369a1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+        .tip-container { display: flex; gap: 8px; margin-bottom: 15px; }
+        .tip-btn {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #334155;
+            text-align: center;
+            font-size: 13px;
+        }
+        .tip-btn.active { background: #1d4ed8; color: white; border-color: #1d4ed8; }
+        button.book-btn {
+            width: 100%;
+            padding: 14px;
+            background: #1d4ed8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+        button.book-btn:hover { background: #1e40af; }
+        #result {
+            margin-top: 25px;
+            padding: 15px;
+            background: #ffffff;
+            border: 2px solid #1d4ed8;
+            border-radius: 8px;
+            display: none;
+        }
+        .receipt-header {
+            text-align: center;
+            font-size: 13px;
+            color: #475569;
+            border-bottom: 2px dashed #cbd5e1;
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+        }
+        .receipt-header h3 { margin: 0 0 5px 0; color: #0f2b46; font-size: 16px; }
+        #receiptDetails {
+            text-align: left;
+            font-size: 13px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 10px;
+            color: #1e293b;
+        }
+        .receipt-item { display: flex; justify-content: space-between; margin-bottom: 5px; gap: 12px; }
+        .total-box { text-align: center; font-weight: bold; color: #0f2b46; }
+        .total { font-size: 26px; color: #16a34a; margin-top: 5px; }
+        .action-buttons { display: flex; gap: 10px; margin-top: 15px; }
+        .pdf-btn, .share-btn {
+            flex: 1;
+            padding: 12px;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+        .pdf-btn { background: #16a34a; }
+        .pdf-btn:hover { background: #15803d; }
+        .share-btn { background: #2563eb; }
+        .share-btn:hover { background: #1d4ed8; }
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            .container { padding: 20px 16px; }
+            .service-grid { grid-template-columns: 1fr; }
+            .tip-container { gap: 5px; }
+            .tip-btn { font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Wildrose Laundry</h2>
+    <div class="subtitle">Online Booking & Service Calculator</div>
+
+    <div class="section-title">1. Customer Information & Service Type</div>
+    <div class="group">
+        <label for="custName">Customer Full Name</label>
+        <input type="text" id="custName" placeholder="e.g. John Doe">
+    </div>
+
+    <div class="group">
+        <label for="custPhone">Customer Phone Number</label>
+        <input type="tel" id="custPhone" placeholder="e.g. (905) 555-0199">
+    </div>
+
+    <div class="group" style="background: #eef2ff; padding: 12px; border-radius: 6px; border: 1px solid #c7d2fe; margin-top: 15px;">
+        <label style="color: #1e3a8a; margin-bottom: 8px; font-size: 14px;">Select Service Type:</label>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 8px; color: #1e3a8a;">
+                <input type="radio" name="serviceType" id="typePickup" value="pickup" checked onchange="toggleServiceType()"> Pick Up & Delivery service (+$10.00)
+            </label>
+            <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 8px; color: #1e3a8a;">
+                <input type="radio" name="serviceType" id="typeDropoff" value="dropoff" onchange="toggleServiceType()"> Self Drop-off (Store Hours: 08:00 AM - 11:30 PM)
+            </label>
+    </div>
+    </div>
+    <div class="group" id="addressGroup" style="margin-top: 10px;">
+        <label for="pickupAddress">Pick Up Address</label>
+        <input type="text" id="pickupAddress" placeholder="Enter your full street address, unit, city">
+    </div>
+    <div id="bookingScheduleSection">
+        <div class="group">
+            <label for="bookDate">Booking Date</label>
+            <input type="date" id="bookDate">
+        </div>
+        <div class="group">
+            <label for="bookTime">Booking Time Slot (Daily: 10:00 AM - 07:00 PM)</label>
+            <select id="bookTime">
+                <option>10:00 AM</option><option>11:00 AM</option><option>11:30 AM</option><option>12:00 PM</option>
+                <option>01:00 PM</option><option>02:00 PM</option><option>03:00 PM</option><option>04:00 PM</option>
+                <option>05:00 PM</option><option>06:00 PM</option><option>07:00 PM (Latest)</option>
+            </select>
+        </div>
+    </div>
+    <div id="dropoffNoticeSection" style="background: #f8fafc; padding: 12px; border-radius: 6px; border: 1px solid #cbd5e1; margin-top: 10px; display: none;">
+        <div style="font-weight: bold; color: #0f2b46; font-size: 13px; margin-bottom: 4px;">Self Drop-off Info:</div>
+        <div style="font-size: 12px; color: #475569; line-height: 1.4;">
+            Since you are dropping off your laundry yourself, no booking slot is required. You can drop off your items daily between <b>08:00 AM and 11:30 PM</b>. Please follow the instructions written on the store door.
+        </div>
+    </div>
+
+    <div class="section-title">2. Payment Method</div>
+    <div class="group">
+        <label for="paymentMethod">Select Payment Option</label>
+        <select id="paymentMethod">
+            <option>Online Payment</option>
+            <option>Cash on Delivery (COD)</option>
+        </select>
+    </div>
+
+    <div class="section-title">3. Laundry & Care Options</div>
+    <div class="group" style="background: #fef2f2; padding: 12px; border-radius: 6px; border: 1px solid #fecaca;">
+        <label style="color: #991b1b; display: flex; align-items: center; gap: 8px; margin: 0 0 4px 0; cursor: pointer;">
+            <input type="checkbox" id="petOwner"> I am a Pet Owner (Mandatory Pet Hair Removal: +$2 per 5 lbs)
+        </label>
+        <div style="font-size: 11px; color: #7f1d1d; margin-left: 24px; line-height: 1.4;">
+            For hygiene and cleaning purposes, an additional $2 per 5lb applies to laundry from homes with pets.
+        </div>
+    </div>
+    <div class="group">
+        <label for="weight">Laundry weight (lb)</label>
+        <input type="number" id="weight" value="10" min="0">
+    </div>
+    <div class="group" style="background: #f0fdf4; padding: 10px; border-radius: 6px; border: 1px solid #bbf7d0;">
+        <label style="color: #166534; display: flex; align-items: center; gap: 8px; margin: 0; cursor: pointer;">
+            <input type="checkbox" id="hangDry"> Hang Dry (Free, but requires +2 days turnaround time)
+        </label>
+    </div>
+    <label>Additional services · Price per 5 lb</label>
+    <div class="service-grid">
+        <label><input type="checkbox" class="srv" value="3" data-name="Softener"> Softener · $3</label>
+        <label><input type="checkbox" class="srv" value="5" data-name="Folding"> Folding · $5</label>
+        <label><input type="checkbox" class="srv" value="5" data-name="Stain removal"> Stain removal · $5</label>
+        <label><input type="checkbox" class="srv" value="4" data-name="Scent boost"> Scent boost · $4</label>
+        <label><input type="checkbox" class="srv" value="4" data-name="Odor removal"> Odor removal · $4</label>
+        <label><input type="checkbox" class="srv" value="5" data-name="Oxy bleach"> Oxy bleach · $5</label>
+        <label><input type="checkbox" class="srv" value="5" data-name="Hypoallergenic"> Hypoallergenic · $5</label>
+        <label><input type="checkbox" class="srv" value="3" data-name="Wrinkle release"> Wrinkle release · $3</label>
+    </div>
+    <div class="service-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom: 12px;">
+        <div><label for="iron">Ironing · $4</label><input type="number" id="iron" value="0" min="0"></div>
+        <div><label for="hangers">Hangers · $1</label><input type="number" id="hangers" value="0" min="0"></div>
+        <div><label for="shoes">Shoes · $10</label><input type="number" id="shoes" value="0" min="0"></div>
+    </div>
+    <div class="duvet-section">
+        <label style="text-align: center; margin-bottom: 6px; color: #0f2b46;">Duvet quantities</label>
+        <div class="duvet-row"><label for="dvS">Single · $15</label><input type="number" id="dvS" value="0" min="0"></div>
+        <div class="duvet-row"><label for="dvQ">Queen · $20</label><input type="number" id="dvQ" value="0" min="0"></div>
+        <div class="duvet-row"><label for="dvK">King · $25</label><input type="number" id="dvK" value="0" min="0"></div>
+    </div>
+
+    <div class="section-title">4. Special Requests & Notes</div>
+    <div class="group"><label for="specialNotes">Notes</label><textarea id="specialNotes" placeholder="Write any specific instructions or special requests here..."></textarea></div>
+
+    <div class="section-title">5. Add a Tip (Optional)</div>
+    <div class="tip-container">
+        <button type="button" class="tip-btn" onclick="setTip(0, this)">No Tip</button>
+        <button type="button" class="tip-btn" onclick="setTip(2, this)">$2.00</button>
+        <button type="button" class="tip-btn active" onclick="setTip(5, this)">$5.00</button>
+        <button type="button" class="tip-btn" onclick="setTip(10, this)">$10.00</button>
+    </div>
+    <div class="tax-box"><label><input type="checkbox" id="applyTax" checked> Apply 13% HST tax</label></div>
+    <button class="book-btn" type="button" onclick="calculateAndBook()">Confirm & Generate Receipt</button>
+
+    <div id="result" aria-live="polite">
+        <div class="receipt-header">
+            <h3>Wildrose Laundry Pick Up & Delivery</h3>
+            <div>6048 Wildrose Cres.</div><div>Niagara Falls, L2G7T2, ON</div><div>Regd No: 1001610119</div>
+            <hr style="border: 0; border-top: 1px dashed #cbd5e1; margin: 6px 0;">
+            <div style="font-weight: bold; font-size: 14px; color: #0f2b46;">BOOKING / SERVICE RECEIPT</div>
+            <div id="receiptMeta"></div>
+        </div>
+        <div id="receiptDetails"></div>
+        <div class="total-box"><div>FINAL TOTAL</div><div class="total" id="finalPrice">$0.00</div></div>
+        <div class="action-buttons">
+            <button class="pdf-btn" type="button" onclick="window.print()">Save PDF</button>
+            <button class="share-btn" type="button" onclick="sharePDFReceipt()">Share Receipt</button>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('bookDate').valueAsDate = new Date();
+    let selectedTip = 5.00;
+
+    function setTip(amount, element) {
+        document.querySelectorAll('.tip-btn').forEach(btn => btn.classList.remove('active'));
+        element.classList.add('active');
+        selectedTip = amount;
+    }
+
+    function toggleServiceType() {
+        const isPickup = document.getElementById('typePickup').checked;
+        document.getElementById('addressGroup').style.display = isPickup ? 'block' : 'none';
+        document.getElementById('bookingScheduleSection').style.display = isPickup ? 'block' : 'none';
+        document.getElementById('dropoffNoticeSection').style.display = isPickup ? 'none' : 'block';
+    }
+
+    function parseTimeToFloat(time) {
+        const [clock, meridiem] = time.split(' ');
+        const [hours, minutes] = clock.split(':').map(Number);
+        let hour = hours;
+        if (meridiem === 'PM' && hour < 12) hour += 12;
+        if (meridiem === 'AM' && hour === 12) hour = 0;
+        return hour + minutes / 60;
+    }
+
+    function calculateAndBook() {
+        const name = document.getElementById('custName').value.trim() || 'Valued Customer';
+        const phone = document.getElementById('custPhone').value.trim();
+        const isPickup = document.getElementById('typePickup').checked;
+        const address = document.getElementById('pickupAddress').value.trim();
+        const paymentMethod = document.getElementById('paymentMethod').value;
+        const notes = document.getElementById('specialNotes').value.trim();
+        const isPetOwner = document.getElementById('petOwner').checked;
+        const isHangDry = document.getElementById('hangDry').checked;
+        const weight = Math.max(0, parseFloat(document.getElementById('weight').value) || 0);
+        const pickup = isPickup ? 10 : 0;
+        const iron = Math.max(0, parseInt(document.getElementById('iron').value, 10) || 0);
+        const hangers = Math.max(0, parseInt(document.getElementById('hangers').value, 10) || 0);
+        const shoes = Math.max(0, parseInt(document.getElementById('shoes').value, 10) || 0);
+        const single = Math.max(0, parseInt(document.getElementById('dvS').value, 10) || 0);
+        const queen = Math.max(0, parseInt(document.getElementById('dvQ').value, 10) || 0);
+        const king = Math.max(0, parseInt(document.getElementById('dvK').value, 10) || 0);
+        const useTax = document.getElementById('applyTax').checked;
+
+        if (!phone) {
+            alert('Please enter your phone number.');
+            document.getElementById('custPhone').focus();
+            return;
+        }
+
+        if (isPickup && !address) {
+            alert('Please enter your Pick Up Address for delivery service.');
+            document.getElementById('pickupAddress').focus();
+            return;
+        }
+
+        const date = isPickup ? document.getElementById('bookDate').value : new Date().toISOString().split('T')[0];
+        const time = isPickup ? document.getElementById('bookTime').value : 'Self Drop-off (08:00 AM - 11:30 PM)';
+        const receiptNumber = Math.floor(10000 + Math.random() * 90000);
+        const today = new Date().toISOString().split('T')[0];
+
+        let readyTimeText = isPickup
+            ? (parseTimeToFloat(time) < 11.5 ? 'Same day (8:00 PM - 10:00 PM)' : 'Within 24 hours (Next Day)')
+            : 'Ready in 24 hours from drop-off';
+        if (isHangDry) readyTimeText += ' [Hang Dry: +2 Days Turnaround]';
+
+        let metaHtml = `Receipt No: ${receiptNumber} | Date: ${today}<br><b>Customer:</b> ${escapeHtml(name)} (${escapeHtml(phone)})<br><b>Service Type:</b> ${isPickup ? 'Pick Up & Delivery' : 'Self Drop-off (Store Hours: 08:00 AM - 11:30 PM)'}<br>`;
+        if (isPickup) {
+            metaHtml += `<b>Pick Up Address:</b> ${escapeHtml(address)}<br><b>Scheduled Pick Up:</b> ${escapeHtml(date)} at ${escapeHtml(time)}<br>`;
+        } else {
+            metaHtml += '<b>Instruction:</b> Follow instructions on store door<br>';
+        }
+        metaHtml += `<b>Payment:</b> ${escapeHtml(paymentMethod)}<br><b style="color: #1d4ed8;">Approximate Ready Time:</b> ${escapeHtml(readyTimeText)}`;
+        document.getElementById('receiptMeta').innerHTML = metaHtml;
+        let detailsHtml = '';
+        const wash = 10 + (weight > 10 ? Math.ceil((weight - 10) / 5) * 5 : 0);
+        detailsHtml += receiptItem(`Base wash (${weight} lbs)`, wash);
+        if (pickup) detailsHtml += receiptItem('Pick up & delivery service', pickup);
+
+        const multiplier = Math.ceil(weight / 5);
+        let servicesTotal = 0;
+        document.querySelectorAll('.srv:checked').forEach(service => {
+            const price = parseFloat(service.value) * multiplier;
+            servicesTotal += price;
+            detailsHtml += receiptItem(service.dataset.name, price);
+        });
+
+        if (isPetOwner) {
+            const petHairPrice = 2 * multiplier;
+            servicesTotal += petHairPrice;
+            detailsHtml += `<div class="receipt-item" style="color: #991b1b; font-weight: bold;"><span>Mandatory Pet Hair Removal</span><span>$${petHairPrice.toFixed(2)}</span></div>`;
+        }
+        if (isHangDry) {
+            detailsHtml += `<div class="receipt-item" style="color: #166534;"><span>Hang Dry (Free / +2 Days)</span><span>$0.00</span></div>`;
+        }
+
+        const extras = [
+            ['Ironing', iron, 4, 'pcs'], ['Hangers', hangers, 1, 'pcs'], ['Shoe pair', shoes, 10, 'pcs'],
+            ['Duvet single', single, 15, 'pcs'], ['Duvet queen', queen, 20, 'pcs'], ['Duvet king', king, 25, 'pcs']
+        ];
+        let extrasTotal = 0;
+        extras.forEach(([label, quantity, price, unit]) => {
+            if (quantity > 0) {
+                const total = quantity * price;
+                extrasTotal += total;
+                detailsHtml += receiptItem(`${label} (${quantity} ${unit})`, total);
+            }
+        });
+
+        const subtotal = wash + pickup + servicesTotal + extrasTotal;
+        detailsHtml += `<div class="receipt-item" style="border-top: 1px dashed #cbd5e1; margin-top: 6px; padding-top: 6px; font-weight: bold;"><span>Subtotal</span><span>$${subtotal.toFixed(2)}</span></div>`;
+        const tax = useTax ? subtotal * 0.13 : 0;
+        detailsHtml += receiptItem(useTax ? 'HST tax (13%)' : 'Tax', useTax ? tax : 'Tax-free ($0.00)');
+        if (selectedTip > 0) detailsHtml += receiptItem('Driver/Staff Tip', selectedTip);
+        if (notes) detailsHtml += `<div style="margin-top: 8px; font-size: 12px; color: #475569; background: #f8fafc; padding: 6px; border-radius: 4px;"><b>Special Requests:</b> ${escapeHtml(notes)}</div>`;
+
+        document.getElementById('receiptDetails').innerHTML = detailsHtml;
+        document.getElementById('finalPrice').innerText = '$' + (subtotal + tax + selectedTip).toFixed(2);
+        document.getElementById('result').style.display = 'block';
+    }
+
+    function receiptItem(label, value) {
+        const renderedValue = typeof value === 'number' ? '$' + value.toFixed(2) : value;
+        return `<div class="receipt-item"><span>${escapeHtml(label)}</span><span>${renderedValue}</span></div>`;
+    }
+
+    function escapeHtml(value) {
+        return String(value).replace(/[&<>'"]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
+    }
+
+    async function sharePDFReceipt() {
+        const element = document.getElementById('result');
+        const actionButtons = element.querySelector('.action-buttons');
+        actionButtons.style.display = 'none';
+        try {
+            const pdfBlob = await html2pdf().from(element).set({
+                margin: 10,
+                filename: 'Wildrose_Laundry_Booking_Receipt.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0, scrollX: 0 },
+                jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' }
+            }).outputPdf('blob');
+            const file = new File([pdfBlob], 'Wildrose_Laundry_Booking_Receipt.pdf', { type: 'application/pdf' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({ files: [file], title: 'Wildrose Laundry Booking', text: 'Here is your official booking and receipt from Wildrose Laundry.' });
+            } else {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(pdfBlob);
+                link.download = 'Wildrose_Laundry_Booking_Receipt.pdf';
+                link.click();
+                URL.revokeObjectURL(link.href);
+            }
+        } catch (error) {
+            console.error('Sharing error:', error);
+        } finally {
+            actionButtons.style.display = 'flex';
+        }
+    }
+</script>
+</body>
+</html>
