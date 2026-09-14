@@ -316,6 +316,25 @@
                 ⚠️ Our system shows that this phone number or address has already redeemed the free pick-up promotion.
             </div>
         </div>
+        <div class="group" style="margin-top: 15px;">
+            <label for="propertyType">Pick-up Location Type <span style="font-weight: normal; font-size: 11px; color: #64748b;">(Select your property type)</span></label>
+            <select id="propertyType" onchange="handlePropertyTypeChange()">
+                <option value="House">House</option>
+                <option value="Apartment/Condo">Apartment / Condo</option>
+                <option value="Hotel">Hotel</option>
+                <option value="Business">Business</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        <div id="hotelNotice" style="display: none; background: #eff6ff; border: 1.5px solid #3b82f6; border-radius: 8px; padding: 12px; margin-top: 10px; margin-bottom: 12px;">
+            <div style="font-weight: bold; color: #1e40af; font-size: 13px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                🏨 Hotel Guest Information
+            </div>
+            <div style="font-size: 12px; color: #1e3a8a; line-height: 1.5;">
+                You don't need to wait for our driver! Through our hotel partnerships, simply leave your laundry bag with the front desk labeled with your <b>Full Name</b> and <b>Room Number</b>.
+                Once left, just send us a quick text or phone call to notify us.
+            </div>
+        </div>
         <div class="group" style="margin-top: 10px;">
             <label for="pickupAddress">Street Address & Unit</label>
             <input type="text" id="pickupAddress" placeholder="Enter your full street address, unit">
@@ -562,6 +581,11 @@
         const isNiagaraFalls = citySelect.selectedIndex === 0;
         document.getElementById('nfFreePickupDiv').style.display = isNiagaraFalls ? 'block' : 'none';
         if (!isNiagaraFalls) document.getElementById('nfFreePickup').checked = false;
+    }
+
+    function handlePropertyTypeChange() {
+        const selectedType = document.getElementById('propertyType').value;
+        document.getElementById('hotelNotice').style.display = selectedType === 'Hotel' ? 'block' : 'none';
     }
 
     function selectVisualWeight(val, element) {
