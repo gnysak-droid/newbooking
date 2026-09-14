@@ -118,6 +118,25 @@
             font-size: 13px;
         }
         .tip-btn.active { background: #1d4ed8; color: white; border-color: #1d4ed8; }
+        .weight-btn {
+            flex: 1;
+            min-width: 60px;
+            padding: 7px 4px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #334155;
+            text-align: center;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        .weight-btn.active {
+            background: #1d4ed8;
+            color: white;
+            border-color: #1d4ed8;
+        }
         button.book-btn {
             width: 100%;
             padding: 14px;
@@ -281,10 +300,19 @@
         </div>
     </div>
     <div class="group">
-        <label for="weightInput">Laundry Weight (lb) <span style="font-weight: normal; font-size: 11px; color: #64748b;">(Enter approximate lbs or type "Unknown")</span></label>
-        <input type="text" id="weightInput" value="10" placeholder="e.g. 15, approx 15, or Unknown">
+        <label for="weightInput">Laundry Weight (lb) <span style="font-weight: normal; font-size: 11px; color: #64748b;">(Select below or enter approximate lbs)</span></label>
+
+        <div class="weight-presets" style="display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap;">
+            <button type="button" class="weight-btn active" onclick="setQuickWeight('10', this)">10 lbs</button>
+            <button type="button" class="weight-btn" onclick="setQuickWeight('15', this)">15 lbs</button>
+            <button type="button" class="weight-btn" onclick="setQuickWeight('20', this)">20 lbs</button>
+            <button type="button" class="weight-btn" onclick="setQuickWeight('25', this)">25 lbs</button>
+            <button type="button" class="weight-btn" onclick="setQuickWeight('Unknown', this)">Unknown</button>
+        </div>
+
+        <input type="text" id="weightInput" value="10" placeholder="e.g. 15, approx 15, or Unknown" oninput="clearWeightBtnSelection()">
         <div style="font-size: 11px; color: #b45309; background: #fef3c7; padding: 8px; border-radius: 6px; border: 1px solid #fde68a; margin-top: 6px; line-height: 1.4;">
-            <b>Note:</b> If you don't know the exact weight, you can enter an approximate value or type <b>"Unknown"</b>. Your laundry will be weighed upon arrival at the store, and exact payment details will be sent to you.
+            <b>Note:</b> If you don't know the exact weight, select <b>"Unknown"</b>. Your laundry will be weighed upon arrival at the store, and exact payment details will be sent to you.
         </div>
     </div>
     <div class="group" style="background: #f0fdf4; padding: 10px; border-radius: 6px; border: 1px solid #bbf7d0;">
@@ -417,6 +445,23 @@
         const isNiagaraFalls = citySelect.selectedIndex === 0;
         document.getElementById('nfFreePickupDiv').style.display = isNiagaraFalls ? 'block' : 'none';
         if (!isNiagaraFalls) document.getElementById('nfFreePickup').checked = false;
+    }
+
+    function setQuickWeight(weightValue, element) {
+        document.getElementById('weightInput').value = weightValue;
+        document.querySelectorAll('.weight-btn').forEach(btn => btn.classList.remove('active'));
+        element.classList.add('active');
+    }
+
+    function clearWeightBtnSelection() {
+        const currentValue = document.getElementById('weightInput').value.trim();
+        document.querySelectorAll('.weight-btn').forEach(btn => {
+            if (btn.innerText.replace(' lbs', '') === currentValue || btn.innerText === currentValue) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
     }
 
     function parseTimeToFloat(time) {
