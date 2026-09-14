@@ -348,6 +348,53 @@
     </div>
 </div>
 <script>
+    function initDateAndTimes() {
+        const today = new Date().toISOString().split('T')[0];
+        const dateInput = document.getElementById('bookDate');
+        const timeSelect = document.getElementById('bookTime');
+
+        dateInput.min = today;
+        if (!dateInput.value || dateInput.value < today) {
+            dateInput.value = today;
+        }
+
+        if (timeSelect) {
+            filterAvailableTimeSlots();
+        }
+    }
+
+    function filterAvailableTimeSlots() {
+        const dateInput = document.getElementById('bookDate');
+        const timeSelect = document.getElementById('bookTime');
+        if (!dateInput || !timeSelect) return;
+
+        const selectedDate = dateInput.value;
+        const todayStr = new Date().toISOString().split('T')[0];
+        const now = new Date();
+        const minAllowedTime = now.getHours() + (now.getMinutes() / 60) + 2;
+
+        let firstValidOption = null;
+
+        Array.from(timeSelect.options).forEach(option => {
+            const optionTimeVal = parseTimeToFloat(option.value);
+
+            if (selectedDate === todayStr && optionTimeVal < minAllowedTime) {
+                option.disabled = true;
+                option.style.color = '#cbd5e1';
+            } else {
+                option.disabled = false;
+                option.style.color = '';
+                if (!firstValidOption) firstValidOption = option;
+            }
+        });
+
+        if (timeSelect.selectedOptions[0]?.disabled && firstValidOption) {
+            timeSelect.value = firstValidOption.value;
+        }
+
+        updateApproxReadyTime();
+    }
+
     document.getElementById('bookDate').valueAsDate = new Date();
     let selectedTip = 5.00;
 
@@ -392,6 +439,8 @@
         document.getElementById('liveReadyTime').innerText = text;
     }
 
+    initDateAndTimes();
+    document.getElementById('bookDate').addEventListener('change', filterAvailableTimeSlots);
     updateApproxReadyTime();
 
     function calculateAndBook() {
