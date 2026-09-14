@@ -141,6 +141,53 @@
             background: #f8fafc;
             box-sizing: border-box;
         }
+        .property-presets {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        .prop-btn {
+            flex: 1;
+            min-width: 85px;
+            padding: 9px 4px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #334155;
+            text-align: center;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        .prop-btn.active {
+            background: #1d4ed8;
+            color: white;
+            border-color: #1d4ed8;
+        }
+        .city-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+        }
+        .city-btn {
+            padding: 9px 6px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #334155;
+            text-align: center;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        .city-btn.active {
+            background: #1d4ed8;
+            color: white;
+            border-color: #1d4ed8;
+        }
         .weight-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -317,14 +364,15 @@
             </div>
         </div>
         <div class="group" style="margin-top: 15px;">
-            <label for="propertyType">Pick-up Location Type <span style="font-weight: normal; font-size: 11px; color: #64748b;">(Select your property type)</span></label>
-            <select id="propertyType" onchange="handlePropertyTypeChange()">
-                <option value="House">House</option>
-                <option value="Apartment/Condo">Apartment / Condo</option>
-                <option value="Hotel">Hotel</option>
-                <option value="Business">Business</option>
-                <option value="Other">Other</option>
-            </select>
+            <label for="propertyType">Pick-up Location Type <span style="font-weight: normal; font-size: 11px; color: #64748b;">(Select below or choose from list)</span></label>
+            <div class="property-presets">
+                <button type="button" class="prop-btn active" onclick="setPropertyType('House', this)">House</button>
+                <button type="button" class="prop-btn" onclick="setPropertyType('Apartment/Condo', this)">Apartment / Condo</button>
+                <button type="button" class="prop-btn" onclick="setPropertyType('Hotel', this)">Hotel</button>
+                <button type="button" class="prop-btn" onclick="setPropertyType('Business', this)">Business</button>
+                <button type="button" class="prop-btn" onclick="setPropertyType('Other', this)">Other</button>
+            </div>
+            <input type="hidden" id="propertyType" value="House">
         </div>
         <div id="hotelNotice" style="display: none; background: #eff6ff; border: 1.5px solid #3b82f6; border-radius: 8px; padding: 12px; margin-top: 10px; margin-bottom: 12px;">
             <div style="font-weight: bold; color: #1e40af; font-size: 13px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
@@ -376,11 +424,7 @@
             <button type="button" class="pay-btn" onclick="setPaymentMethod('Debit or Credit Card (At Door / In-Store)', this)">Debit / Credit Card</button>
         </div>
 
-        <select id="paymentMethod" onchange="syncPaymentButtons()">
-            <option value="Online Payment (Secure Link via Text/Email)">Online Payment (Payment Link will be sent after pickup)</option>
-            <option value="Cash on Delivery (COD)">Cash on Delivery (COD)</option>
-            <option value="Debit or Credit Card (At Door / In-Store)">Debit or Credit Card (In-Person)</option>
-        </select>
+        <input type="hidden" id="paymentMethod" value="Online Payment (Secure Link via Text/Email)">
 
         <div style="font-size: 11px; color: #1e3a8a; background: #eff6ff; padding: 8px; border-radius: 6px; border: 1px solid #bfdbfe; margin-top: 6px; line-height: 1.4;">
             <b>Note:</b> For Online Payment, a secure payment link will be automatically sent to your phone/email once your items are picked up and weighed.
@@ -577,10 +621,23 @@
     }
 
     function handleCityChange() {
-        const citySelect = document.getElementById('pickupCity');
-        const isNiagaraFalls = citySelect.selectedIndex === 0;
+        const isNiagaraFalls = document.getElementById('pickupCity').selectedIndex === 0;
         document.getElementById('nfFreePickupDiv').style.display = isNiagaraFalls ? 'block' : 'none';
         if (!isNiagaraFalls) document.getElementById('nfFreePickup').checked = false;
+    }
+
+    function setPropertyType(value, element) {
+        document.getElementById('propertyType').value = value;
+        document.querySelectorAll('.prop-btn').forEach(button => button.classList.remove('active'));
+        element.classList.add('active');
+        handlePropertyTypeChange();
+    }
+
+    function syncPropertyButtons() {
+        const selectedValue = document.getElementById('propertyType').value;
+        document.querySelectorAll('.prop-btn').forEach(button => {
+            button.classList.toggle('active', button.getAttribute('onclick').includes(`'${selectedValue}'`));
+        });
     }
 
     function handlePropertyTypeChange() {
