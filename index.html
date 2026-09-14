@@ -309,9 +309,12 @@
         </div>
         <div class="group" id="nfFreePickupDiv" style="background: #f0fdf4; padding: 10px; border-radius: 6px; border: 1px solid #bbf7d0;">
             <label style="color: #166534; display: flex; align-items: flex-start; gap: 8px; margin: 0; cursor: pointer; font-weight: normal; font-size: 13px;">
-                <input type="checkbox" id="nfFreePickup" style="margin-top: 2px;">
-                <span><b>First Pick-up Free</b> (Exclusive for Niagara Falls resident houses only; excludes hotels, apartments, condos, commercial - standard fee amount will be deducted or adjusted in the total price if ineligible)</span>
+                <input type="checkbox" id="nfFreePickup" style="margin-top: 2px;" onchange="checkPromoEligibility()">
+                <span><b>First Pick-up Free</b> (Exclusive for Niagara Falls resident houses only)</span>
             </label>
+            <div id="promoErrorMsg" style="display: none; color: #dc2626; font-size: 11px; font-weight: bold; margin-top: 5px;">
+                ⚠️ Our system shows that this phone number or address has already redeemed the free pick-up promotion.
+            </div>
         </div>
         <div class="group" style="margin-top: 10px;">
             <label for="pickupAddress">Street Address & Unit</label>
@@ -618,7 +621,42 @@
 
     initDateAndTimes();
     document.getElementById('bookDate').addEventListener('change', filterAvailableTimeSlots);
+    document.getElementById('custPhone').addEventListener('input', checkPromoEligibility);
+    document.getElementById('pickupAddress').addEventListener('input', checkPromoEligibility);
     updateApproxReadyTime();
+
+    function checkPromoEligibility() {
+        const phone = document.getElementById('custPhone').value.trim().replace(/\D/g, '');
+        const address = document.getElementById('pickupAddress').value.trim().toLowerCase();
+        const promoCheckbox = document.getElementById('nfFreePickup');
+        const errorMsg = document.getElementById('promoErrorMsg');
+        const usedPromos = JSON.parse(localStorage.getItem('wildrose_used_promos') || '[]');
+        const isAlreadyUsed = usedPromos.some(item =>
+            (phone && item.phone === phone) || (address && item.address === address)
+        );
+
+        if (isAlreadyUsed) {
+            promoCheckbox.checked = false;
+            promoCheckbox.disabled = true;
+            errorMsg.style.display = 'block';
+        } else {
+            promoCheckbox.disabled = false;
+            errorMsg.style.display = 'none';
+        }
+    }
+
+    function savePromoUsage() {
+        const isPickup = document.getElementById('typePickup').checked;
+        const isNiagaraFalls = document.getElementById('pickupCity').selectedIndex === 0;
+        const isNFFree = isPickup && isNiagaraFalls && document.getElementById('nfFreePickup').checked;
+        if (!isNFFree) return;
+
+        const phone = document.getElementById('custPhone').value.trim().replace(/\D/g, '');
+        const address = document.getElementById('pickupAddress').value.trim().toLowerCase();
+        const usedPromos = JSON.parse(localStorage.getItem('wildrose_used_promos') || '[]');
+        usedPromos.push({ phone, address, date: new Date().toISOString() });
+        localStorage.setItem('wildrose_used_promos', JSON.stringify(usedPromos));
+    }
 
     function calculateAndBook() {
         const name = document.getElementById('custName').value.trim() || 'Valued Customer';
@@ -743,8 +781,11 @@
                 'Order Details': plainTextReceipt
             })
         })
-            .then(response => response.json())
-            .then(data => console.log('Booking email sent successfully!'))
+            .then(response => response.json().then(data => ({ response, data })))
+            .then(({ response }) => {
+                if (response.ok) savePromoUsage();
+                console.log('Booking email sent successfully!');
+            })
             .catch(error => console.error('Error sending email:', error));
     }
 
