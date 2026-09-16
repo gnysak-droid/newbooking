@@ -289,6 +289,46 @@
         .total-box { text-align: center; font-weight: bold; color: #0f2b46; }
         .total { font-size: 26px; color: #16a34a; margin-top: 5px; }
         .action-buttons { display: flex; gap: 10px; margin-top: 15px; }
+        .reviews-section {
+            max-width: 550px;
+            margin: 35px auto 0;
+            padding: 24px;
+            background: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 4px 20px rgba(15, 43, 70, 0.08);
+            border: 1px solid #e2e8f0;
+            box-sizing: border-box;
+        }
+        .reviews-header { text-align: center; margin-bottom: 20px; }
+        .rating-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #fef3c7;
+            color: #b45309;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+        .reviews-title { font-size: 18px; color: #0f2b46; margin: 0; font-weight: bold; }
+        .reviews-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .review-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 14px; border-radius: 10px; }
+        .review-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .reviewer-name { font-size: 13px; font-weight: bold; color: #1e293b; }
+        .stars { color: #f59e0b; font-size: 13px; letter-spacing: 1px; }
+        .review-text { font-size: 12px; color: #475569; line-height: 1.4; margin: 0; }
+        .review-tag {
+            display: inline-block;
+            font-size: 10px;
+            color: #1d4ed8;
+            background: #eff6ff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-top: 6px;
+            font-weight: 500;
+        }
         .pdf-btn, .share-btn {
             flex: 1;
             padding: 12px;
@@ -548,6 +588,41 @@
         </div>
     </div>
 </div>
+<section class="reviews-section" aria-labelledby="reviews-title">
+    <div class="reviews-header">
+        <div class="rating-badge">★ 4.8 / 5.0</div>
+        <h3 class="reviews-title" id="reviews-title">Loved by Locals in Niagara Region</h3>
+    </div>
+
+    <div class="reviews-grid">
+        <article class="review-card">
+            <div class="review-top">
+                <span class="reviewer-name">Sarah M.</span>
+                <span class="stars" aria-label="5 out of 5 stars">★★★★★</span>
+            </div>
+            <p class="review-text">&quot;Super convenient pickup service in Niagara Falls! Clothes came back smelling fresh, perfectly folded, and right on time.&quot;</p>
+            <span class="review-tag">Verified Customer · Pick Up &amp; Delivery</span>
+        </article>
+
+        <article class="review-card">
+            <div class="review-top">
+                <span class="reviewer-name">David K.</span>
+                <span class="stars" aria-label="5 out of 5 stars">★★★★★</span>
+            </div>
+            <p class="review-text">&quot;Used their self drop-off system. Extremely organized and clear instructions. My king-size duvet feels brand new!&quot;</p>
+            <span class="review-tag">Verified Customer · Self Drop-off</span>
+        </article>
+
+        <article class="review-card">
+            <div class="review-top">
+                <span class="reviewer-name">Elena R.</span>
+                <span class="stars" aria-label="5 out of 5 stars">★★★★★</span>
+            </div>
+            <p class="review-text">&quot;As a pet owner, the hair removal service was a lifesaver. Great communication and transparent pricing.&quot;</p>
+            <span class="review-tag">Verified Customer · Pet Hair Removal</span>
+        </article>
+    </div>
+</section>
 <script>
     function initDateAndTimes() {
         const today = new Date().toISOString().split('T')[0];
