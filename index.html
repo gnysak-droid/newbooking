@@ -12,6 +12,33 @@
             margin: 0;
             padding: 20px;
         }
+        .top-rating-bar {
+            background-color: #f8f9fa;
+            color: #333;
+            font-size: 13px;
+            padding: 6px 12px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .rating-stars {
+            color: #ffc107;
+            letter-spacing: 1px;
+            font-size: 14px;
+        }
+        .google-logo {
+            width: 16px;
+            height: 16px;
+            flex: 0 0 16px;
+        }
+        .rating-score {
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        .rating-text { color: #6c757d; }
         .container {
             max-width: 550px;
             margin: auto;
@@ -374,6 +401,12 @@
             .tip-container { gap: 5px; }
             .tip-btn { font-size: 12px; }
             .tip-grid { grid-template-columns: repeat(3, 1fr); }
+            .top-rating-bar {
+                font-size: 11px;
+                padding: 4px 8px;
+                gap: 5px;
+            }
+            .rating-stars { font-size: 12px; }
             .whatsapp-float {
                 width: 48px;
                 height: 48px;
@@ -384,6 +417,17 @@
     </style>
 </head>
 <body>
+<div class="top-rating-bar" role="status" aria-label="Customer rating">
+    <div class="rating-stars" aria-hidden="true">★★★★★</div>
+    <svg class="google-logo" viewBox="0 0 24 24" role="img" aria-label="Google">
+        <path fill="#4285F4" d="M21.35 12.27c0-.79-.07-1.54-.22-2.27H12v4.3h5.24a4.47 4.47 0 0 1-1.94 2.93v2.83h3.63c2.13-1.96 3.36-4.84 3.36-7.79z"/>
+        <path fill="#34A853" d="M12 21.5c3.04 0 5.59-1 7.45-2.74l-3.63-2.83c-1 .68-2.29 1.08-3.82 1.08-2.94 0-5.43-1.99-6.32-4.66H1.93v2.92A11.25 11.25 0 0 0 12 21.5z"/>
+        <path fill="#FBBC05" d="M5.68 12.35a6.77 6.77 0 0 1 0-4.31V5.12H1.93a11.25 11.25 0 0 0 0 10.15l3.75-2.92z"/>
+        <path fill="#EA4335" d="M12 3.62c1.66 0 3.14.57 4.31 1.69l3.23-3.23C17.59.99 15.04 0 12 0 7.61 0 3.8 2.52 1.93 6.2l3.75 2.92C6.57 6.05 9.06 3.62 12 3.62z"/>
+    </svg>
+    <span class="rating-score">4.9/5</span>
+    <span class="rating-text">• <strong>250+</strong> Happy Customer Reviews</span>
+</div>
 <div class="container">
     <h2>Wildrose Laundry</h2>
     <div class="subtitle">Online Booking & Service Calculator</div>
