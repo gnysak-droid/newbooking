@@ -131,6 +131,75 @@
             align-items: center;
             margin-bottom: 6px;
         }
+        .dc-container {
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 14px;
+            margin-top: 12px;
+        }
+        .dc-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+        .dc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .dc-category-title {
+            grid-column: span 2;
+            font-size: 12px;
+            font-weight: bold;
+            color: #1e3a8a;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 3px;
+            margin-top: 8px;
+        }
+        .dc-item label {
+            font-weight: normal;
+            font-size: 11px;
+            color: #334155;
+        }
+        .main-service-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .main-service-btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 12px 8px;
+            border: 1.5px solid #cbd5e1;
+            background: #f8fafc;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #334155;
+            text-align: center;
+            font-size: 13px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .main-service-btn:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+        .main-service-btn.active {
+            background: #1d4ed8;
+            color: white;
+            border-color: #1d4ed8;
+            box-shadow: 0 2px 8px rgba(29, 78, 216, 0.25);
+        }
+        .service-panel { display: none; }
+        .service-panel.active { display: block; }
         .tip-container { display: flex; gap: 8px; margin-bottom: 15px; }
         .tip-btn {
             flex: 1;
@@ -439,11 +508,18 @@
     </div>
 
     <div class="group">
-        <label for="custPhone">Customer Phone Number</label>
-        <input type="tel" id="custPhone" placeholder="e.g. (905) 555-0199">
+        <label for="customerPhone">Phone Number</label>
+        <input type="tel" id="customerPhone" placeholder="(123) 456-7890">
     </div>
 
-    <div class="group" style="background: #eef2ff; padding: 12px; border-radius: 6px; border: 1px solid #c7d2fe; margin-top: 15px;">
+    <div class="section-title">3. Select Main Service Category</div>
+    <div class="main-service-selector">
+        <button type="button" class="main-service-btn active" onclick="switchMainService('laundry', this)">🧺 Laundry &amp; Care</button>
+        <button type="button" class="main-service-btn" onclick="switchMainService('drycleaning', this)">👔 Dry Cleaning</button>
+        <button type="button" class="main-service-btn" onclick="switchMainService('cleaning', this)">🧹 House / Commercial Cleaning</button>
+    </div>
+
+    <div id="serviceTypeSection" style="display: none;">
         <label style="color: #1e3a8a; margin-bottom: 8px; font-size: 14px;">Select Service Type:</label>
         <div style="display: flex; flex-direction: column; gap: 8px;">
             <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 8px; color: #1e3a8a;">
@@ -454,7 +530,8 @@
             </label>
     </div>
     </div>
-    <div id="addressGroup">
+    <div id="pickupAreaSection">
+        <div id="addressGroup">
         <div class="group" style="margin-top: 10px;">
             <label for="pickupCity">Pick Up City / Area</label>
             <select id="pickupCity" onchange="handleCityChange()">
@@ -500,6 +577,7 @@
             <label for="pickupAddress">Street Address & Unit</label>
             <input type="text" id="pickupAddress" placeholder="Enter your full street address, unit">
         </div>
+        </div>
     </div>
     <div id="bookingScheduleSection">
         <div class="group">
@@ -507,14 +585,14 @@
             <input type="date" id="bookDate">
         </div>
         <div class="group">
-            <label for="bookTime">Booking Time Slot (Daily: 10:00 AM - 07:00 PM)</label>
+            <label for="bookTime" id="bookingTimeLabel">Booking Time Slot (Daily: 10:00 AM - 07:00 PM)</label>
             <select id="bookTime" onchange="updateApproxReadyTime()">
                 <option>10:00 AM</option><option>11:00 AM</option><option>11:30 AM</option><option>12:00 PM</option>
                 <option>01:00 PM</option><option>02:00 PM</option><option>03:00 PM</option><option>04:00 PM</option>
                 <option>05:00 PM</option><option>06:00 PM</option><option>07:00 PM (Latest)</option>
             </select>
         </div>
-        <div style="background: #eef2ff; padding: 10px; border-radius: 6px; border: 1px solid #c7d2fe; margin-bottom: 12px;">
+        <div id="readyTimeSection" style="background: #eef2ff; padding: 10px; border-radius: 6px; border: 1px solid #c7d2fe; margin-bottom: 12px;">
             <div style="font-size: 11px; color: #1e3a8a; font-weight: bold; text-transform: uppercase;">Approximate Ready Time</div>
             <div id="liveReadyTime" style="font-size: 14px; color: #1d4ed8; font-weight: bold; margin-top: 2px;">Same day (8:00 PM - 10:00 PM)</div>
         </div>
@@ -544,7 +622,7 @@
         </div>
     </div>
 
-    <div class="section-title">3. Laundry & Care Options</div>
+    <div id="panel-laundry" class="service-panel active">
     <div class="group" style="background: #fef2f2; padding: 12px; border-radius: 6px; border: 1px solid #fecaca;">
         <label style="color: #991b1b; display: flex; align-items: center; gap: 8px; margin: 0 0 4px 0; cursor: pointer;">
             <input type="checkbox" id="petOwner"> I am a Pet Owner (Mandatory Pet Hair Removal: +$2 per 5 lbs)
@@ -624,6 +702,91 @@
         <div class="duvet-row"><label for="dvS">Single · $15</label><input type="number" id="dvS" value="0" min="0"></div>
         <div class="duvet-row"><label for="dvQ">Queen · $20</label><input type="number" id="dvQ" value="0" min="0"></div>
         <div class="duvet-row"><label for="dvK">King · $25</label><input type="number" id="dvK" value="0" min="0"></div>
+    </div>
+    </div>
+    <div id="panel-drycleaning" class="service-panel">
+        <div style="font-size: 11px; color: #15803d; background: #f0fdf4; padding: 8px; border-radius: 6px; border: 1px solid #bbf7d0; margin-bottom: 12px;">
+            <b>Fast Turnaround:</b> Ready in 24 Hours.
+        </div>
+        <div class="dc-grid">
+                <div class="dc-category-title">Shirts &amp; Tops</div>
+                <div class="dc-item"><label for="dcDressShirt">Dress Shirt · $9.99</label><input type="number" id="dcDressShirt" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcLinenShirt">Linen / Silk / Cuff Shirt · $14.99</label><input type="number" id="dcLinenShirt" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcBlouse">Blouse · $17.99</label><input type="number" id="dcBlouse" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcLongBlouse">Extra Long Blouse · $19.99</label><input type="number" id="dcLongBlouse" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcSweater">Sweater · $19.99</label><input type="number" id="dcSweater" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcScarf">Scarf · $17.99</label><input type="number" id="dcScarf" value="0" min="0"></div>
+
+                <div class="dc-category-title">Pants &amp; Skirts</div>
+                <div class="dc-item"><label for="dcPants">Pants · $19.99</label><input type="number" id="dcPants" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcWhitePants">White Pants · $21.99</label><input type="number" id="dcWhitePants" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcSkirt">Skirt · $19.99</label><input type="number" id="dcSkirt" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcShorts">Shorts · $17.99</label><input type="number" id="dcShorts" value="0" min="0"></div>
+
+                <div class="dc-category-title">Dresses &amp; Formal Wear</div>
+                <div class="dc-item"><label for="dcDress">Dress · $44.99</label><input type="number" id="dcDress" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcEveningDress">Evening / Lined Dress · $49.99</label><input type="number" id="dcEveningDress" value="0" min="0"></div>
+
+                <div class="dc-category-title">Suits &amp; Jackets</div>
+                <div class="dc-item"><label for="dcSuit2P">2 Piece Suit · $44.99</label><input type="number" id="dcSuit2P" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcSuit3P">3 Piece Suit · $54.99</label><input type="number" id="dcSuit3P" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcBlazer">Blazer · $29.99</label><input type="number" id="dcBlazer" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcJacket">Jacket · $34.99</label><input type="number" id="dcJacket" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcVest">Vest · $14.99</label><input type="number" id="dcVest" value="0" min="0"></div>
+
+                <div class="dc-category-title">Coats &amp; Outerwear</div>
+                <div class="dc-item"><label for="dcCoat34Unlined">3/4 Coat (Unlined) · $39.99</label><input type="number" id="dcCoat34Unlined" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcCoat34Lined">3/4 Coat (Lined) · $44.99</label><input type="number" id="dcCoat34Lined" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcDownJacket">Down Filled Jacket · $49.99</label><input type="number" id="dcDownJacket" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcDownCoat">Down Filled Coat · $99.99</label><input type="number" id="dcDownCoat" value="0" min="0"></div>
+
+                <div class="dc-category-title">Household Items</div>
+                <div class="dc-item"><label for="dcBlanket">Blanket · $44.99</label><input type="number" id="dcBlanket" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcComforter">Comforter · $69.99</label><input type="number" id="dcComforter" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcBedSkirt">Bed Skirt · $39.99</label><input type="number" id="dcBedSkirt" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcSheet">Sheet · $29.99</label><input type="number" id="dcSheet" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcPillow">Pillow / Cushion · $12.99</label><input type="number" id="dcPillow" value="0" min="0"></div>
+                <div class="dc-item"><label for="dcTowel">Towel · $19.99</label><input type="number" id="dcTowel" value="0" min="0"></div>
+        </div>
+    </div>
+
+    <div id="panel-cleaning" class="service-panel">
+        <div style="font-size: 11px; color: #b45309; background: #fef3c7; padding: 8px; border-radius: 6px; border: 1px solid #fde68a; margin-bottom: 12px;">
+            <b>Booking Notice:</b> Cleaning services must be scheduled at least <b>4 days in advance</b> (Minimum 4 hours required).
+        </div>
+
+        <div class="group">
+            <label for="cleaningType">Service Package</label>
+            <select id="cleaningType" onchange="calculateCleaningHours()">
+                <option value="45" data-name="Standard Clean">Standard Clean ($45.00/hr + HST)</option>
+                <option value="55" data-name="Essential Refresh (Deep Clean)">Essential Refresh / Deep Clean ($55.00/hr + HST)</option>
+                <option value="55" data-name="Commercial Cleaning">Commercial / Office Cleaning ($55.00/hr + HST)</option>
+            </select>
+        </div>
+        <div class="group">
+            <label for="cleaningBedrooms">Number of Bedrooms (+1 hr each)</label>
+            <input type="number" id="cleaningBedrooms" value="1" min="0" onchange="calculateCleaningHours()">
+        </div>
+        <div class="group">
+            <label style="font-weight: bold; margin-bottom: 6px; display: block;">Optional Add-Ons (+1 hr each)</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <label style="font-size: 12px; font-weight: normal;"><input type="checkbox" class="hc-addon" onchange="calculateCleaningHours()"> Washing Dishes (+1 hr)</label>
+                <label style="font-size: 12px; font-weight: normal;"><input type="checkbox" class="hc-addon" onchange="calculateCleaningHours()"> Oven Cleaning (+1 hr)</label>
+                <label style="font-size: 12px; font-weight: normal;"><input type="checkbox" class="hc-addon" onchange="calculateCleaningHours()"> Fridge Cleaning (+1 hr)</label>
+                <label style="font-size: 12px; font-weight: normal;"><input type="checkbox" class="hc-addon" onchange="calculateCleaningHours()"> Cabinets Cleaning (+1 hr)</label>
+            </div>
+        </div>
+        <div class="group" style="background: #fef2f2; padding: 10px; border-radius: 6px; border: 1px solid #fecaca;">
+            <label style="color: #991b1b; display: flex; align-items: center; gap: 8px; margin: 0; cursor: pointer; font-size: 12px;">
+                <input type="checkbox" id="housePetOwner" onchange="calculateCleaningHours()"> Home with Pets (+$10/hr rate increase)
+            </label>
+        </div>
+        <div class="group">
+            <label>Estimated Total Time &amp; Rate</label>
+            <div id="cleaningSummaryBox" style="font-weight: bold; color: #0f2b46; background: #e2e8f0; padding: 8px 12px; border-radius: 6px; font-size: 13px;">
+                Total Estimated Time: 4 hrs @ $45.00/hr (+ HST)
+            </div>
+        </div>
     </div>
 
     <div class="section-title">4. Special Requests & Notes</div>
@@ -826,6 +989,29 @@
         element.classList.add('active');
     }
 
+    let currentMainService = 'laundry';
+
+    function updateUIForSelectedService() {
+        const readyTimeSection = document.getElementById('readyTimeSection');
+        const pickupAreaSection = document.getElementById('pickupAreaSection');
+        const serviceTypeSection = document.getElementById('serviceTypeSection');
+        const isCleaning = currentMainService === 'cleaning';
+
+        if (serviceTypeSection) serviceTypeSection.style.display = 'none';
+        if (readyTimeSection) readyTimeSection.style.display = isCleaning ? 'none' : 'block';
+        if (pickupAreaSection) pickupAreaSection.style.display = isCleaning ? 'none' : 'block';
+    }
+
+    function switchMainService(serviceKey, element) {
+        currentMainService = serviceKey;
+        document.querySelectorAll('.main-service-btn').forEach(button => button.classList.remove('active'));
+        element.classList.add('active');
+        document.querySelectorAll('.service-panel').forEach(panel => panel.classList.remove('active'));
+        document.getElementById(`panel-${serviceKey}`).classList.add('active');
+        updateBookingDateRestrictions();
+        updateUIForSelectedService();
+    }
+
     function syncPaymentButtons() {
         const selectedVal = document.getElementById('paymentMethod').value;
         document.querySelectorAll('.pay-btn').forEach(btn => {
@@ -857,14 +1043,114 @@
         document.getElementById('liveReadyTime').innerText = text;
     }
 
+    function formatDateInputValue(date) {
+        return date.toISOString().split('T')[0];
+    }
+
+    function getDefaultBookingTimeOptions() {
+        return [
+            '10:00 AM', '11:00 AM', '11:30 AM', '12:00 PM', '01:00 PM',
+            '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM (Latest)'
+        ];
+    }
+
+    function setBookingTimeOptions(options) {
+        const timeSelect = document.getElementById('bookTime');
+        if (!timeSelect) return;
+
+        timeSelect.innerHTML = '';
+        options.forEach(time => {
+            const option = document.createElement('option');
+            option.value = time;
+            option.textContent = time;
+            timeSelect.appendChild(option);
+        });
+    }
+
+    function updateBookingDateRestrictions() {
+        const dateInput = document.getElementById('bookDate');
+        const timeSelect = document.getElementById('bookTime');
+        const timeLabel = document.getElementById('bookingTimeLabel');
+        const today = new Date();
+        const todayStr = formatDateInputValue(today);
+        let minimumDateStr = todayStr;
+
+        if (currentMainService === 'cleaning') {
+            const minimumDate = new Date(today);
+            minimumDate.setDate(minimumDate.getDate() + 4);
+            minimumDateStr = formatDateInputValue(minimumDate);
+            setBookingTimeOptions([
+                '07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM',
+                '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM'
+            ]);
+            if (timeLabel) timeLabel.textContent = 'Booking Time Slot (Cleaning: 07:00 AM - 04:00 PM)';
+        } else {
+            setBookingTimeOptions(getDefaultBookingTimeOptions());
+            if (timeLabel) timeLabel.textContent = 'Booking Time Slot (Daily: 10:00 AM - 07:00 PM)';
+        }
+
+        if (dateInput) {
+            dateInput.min = minimumDateStr;
+            if (!dateInput.value || dateInput.value < minimumDateStr) {
+                dateInput.value = minimumDateStr;
+            }
+        }
+
+        filterAvailableTimeSlots();
+    }
+
+    function validateCleaningDate() {
+        if (currentMainService !== 'cleaning') return true;
+
+        const dateInput = document.getElementById('bookDate');
+        if (!dateInput || !dateInput.value) return false;
+
+        const minimumDate = new Date();
+        minimumDate.setHours(0, 0, 0, 0);
+        minimumDate.setDate(minimumDate.getDate() + 4);
+        const selectedDate = new Date(`${dateInput.value}T00:00:00`);
+
+        if (selectedDate < minimumDate) {
+            alert('House / Commercial Cleaning bookings must be made at least 4 days in advance.');
+            dateInput.value = formatDateInputValue(minimumDate);
+            return false;
+        }
+        return true;
+    }
+
+    function calculateCleaningHours() {
+        const packageSelect = document.getElementById('cleaningType');
+        let baseRate = parseFloat(packageSelect.value);
+        if (document.getElementById('housePetOwner').checked) baseRate += 10;
+
+        const bedrooms = Math.max(0, parseInt(document.getElementById('cleaningBedrooms').value, 10) || 0);
+        const addonCount = document.querySelectorAll('.hc-addon:checked').length;
+        const totalHours = Math.max(4, 2 + bedrooms + addonCount);
+        const summaryBox = document.getElementById('cleaningSummaryBox');
+        if (summaryBox) summaryBox.innerText = `Total Estimated Time: ${totalHours} hrs @ $${baseRate.toFixed(2)}/hr (+ HST)`;
+        return { totalHours, baseRate };
+    }
+
+    function validateBookingDate(selectedDateStr) {
+        if (currentMainService !== 'cleaning') return true;
+
+        const dateInput = document.getElementById('bookDate');
+        if (dateInput) dateInput.value = selectedDateStr;
+        const isValid = validateCleaningDate();
+        return isValid;
+    }
+
     initDateAndTimes();
     document.getElementById('bookDate').addEventListener('change', filterAvailableTimeSlots);
-    document.getElementById('custPhone').addEventListener('input', checkPromoEligibility);
+    document.getElementById('bookDate').addEventListener('change', validateCleaningDate);
+    document.getElementById('customerPhone').addEventListener('input', checkPromoEligibility);
     document.getElementById('pickupAddress').addEventListener('input', checkPromoEligibility);
+    updateBookingDateRestrictions();
+    updateUIForSelectedService();
     updateApproxReadyTime();
 
     function checkPromoEligibility() {
-        const phone = document.getElementById('custPhone').value.trim().replace(/\D/g, '');
+        const phone = document.getElementById('customerPhone').value.trim().replace(/\D/g, '');
         const address = document.getElementById('pickupAddress').value.trim().toLowerCase();
         const promoCheckbox = document.getElementById('nfFreePickup');
         const errorMsg = document.getElementById('promoErrorMsg');
@@ -884,12 +1170,13 @@
     }
 
     function savePromoUsage() {
+        if (currentMainService === 'cleaning') return;
         const isPickup = document.getElementById('typePickup').checked;
         const isNiagaraFalls = document.getElementById('pickupCity').selectedIndex === 0;
         const isNFFree = isPickup && isNiagaraFalls && document.getElementById('nfFreePickup').checked;
         if (!isNFFree) return;
 
-        const phone = document.getElementById('custPhone').value.trim().replace(/\D/g, '');
+        const phone = document.getElementById('customerPhone').value.trim().replace(/\D/g, '');
         const address = document.getElementById('pickupAddress').value.trim().toLowerCase();
         const usedPromos = JSON.parse(localStorage.getItem('wildrose_used_promos') || '[]');
         usedPromos.push({ phone, address, date: new Date().toISOString() });
@@ -898,11 +1185,12 @@
 
     function calculateAndBook() {
         const name = document.getElementById('custName').value.trim() || 'Valued Customer';
-        const phone = document.getElementById('custPhone').value.trim();
+        const phone = document.getElementById('customerPhone').value.trim();
         const isPickup = document.getElementById('typePickup').checked;
+        const isPickupService = isPickup && currentMainService !== 'cleaning';
         const citySelect = document.getElementById('pickupCity');
         const cityName = citySelect.options[citySelect.selectedIndex].text.split(' (')[0];
-        let pickupCost = isPickup ? parseFloat(citySelect.value) : 0;
+        let pickupCost = isPickupService ? parseFloat(citySelect.value) : 0;
         const isNFFree = document.getElementById('nfFreePickup').checked;
         if (isPickup && citySelect.selectedIndex === 0 && isNFFree) pickupCost = 0;
         const address = document.getElementById('pickupAddress').value.trim();
@@ -910,40 +1198,98 @@
         const notes = document.getElementById('specialNotes').value.trim();
         const isPetOwner = document.getElementById('petOwner').checked;
         const isHangDry = document.getElementById('hangDry').checked;
-        const weightInputValue = document.getElementById('weightInput').value.trim();
-        const weight = parseFloat(weightInputValue);
-        const isWeightUnknown = isNaN(weight);
-        const normalizedWeight = isWeightUnknown ? 10 : weight;
-        const iron = Math.max(0, parseInt(document.getElementById('iron').value, 10) || 0);
-        const hangers = Math.max(0, parseInt(document.getElementById('hangers').value, 10) || 0);
-        const shoes = Math.max(0, parseInt(document.getElementById('shoes').value, 10) || 0);
-        const single = Math.max(0, parseInt(document.getElementById('dvS').value, 10) || 0);
-        const queen = Math.max(0, parseInt(document.getElementById('dvQ').value, 10) || 0);
-        const king = Math.max(0, parseInt(document.getElementById('dvK').value, 10) || 0);
+        let wash = 0;
+        let isWeightUnknown = false;
+        let normalizedWeight = 10;
+        let weightInputValue = '';
+        let extras = [];
+
+        if (currentMainService === 'laundry') {
+            weightInputValue = document.getElementById('weightInput').value.trim();
+            const weight = parseFloat(weightInputValue);
+            isWeightUnknown = isNaN(weight);
+            normalizedWeight = isWeightUnknown ? 10 : weight;
+            wash = 10 + (normalizedWeight > 10 ? Math.ceil((normalizedWeight - 10) / 5) * 5 : 0);
+
+            const iron = Math.max(0, parseInt(document.getElementById('iron').value, 10) || 0);
+            const hangers = Math.max(0, parseInt(document.getElementById('hangers').value, 10) || 0);
+            const shoes = Math.max(0, parseInt(document.getElementById('shoes').value, 10) || 0);
+            const single = Math.max(0, parseInt(document.getElementById('dvS').value, 10) || 0);
+            const queen = Math.max(0, parseInt(document.getElementById('dvQ').value, 10) || 0);
+            const king = Math.max(0, parseInt(document.getElementById('dvK').value, 10) || 0);
+            extras = [
+                ['Ironing', iron, 4, 'pcs'], ['Hangers', hangers, 1, 'pcs'], ['Shoe pair', shoes, 10, 'pcs'],
+                ['Duvet single', single, 15, 'pcs'], ['Duvet queen', queen, 20, 'pcs'], ['Duvet king', king, 25, 'pcs']
+            ];
+        } else if (currentMainService === 'drycleaning') {
+            const getDCVal = id => Math.max(0, parseInt(document.getElementById(id)?.value, 10) || 0);
+            extras = [
+                ['Dry Clean - Dress Shirt', getDCVal('dcDressShirt'), 9.99, 'pcs'],
+                ['Dry Clean - Linen/Silk/Cuff Shirt', getDCVal('dcLinenShirt'), 14.99, 'pcs'],
+                ['Dry Clean - Blouse', getDCVal('dcBlouse'), 17.99, 'pcs'],
+                ['Dry Clean - Extra Long Blouse', getDCVal('dcLongBlouse'), 19.99, 'pcs'],
+                ['Dry Clean - Sweater', getDCVal('dcSweater'), 19.99, 'pcs'],
+                ['Dry Clean - Scarf', getDCVal('dcScarf'), 17.99, 'pcs'],
+                ['Dry Clean - Pants', getDCVal('dcPants'), 19.99, 'pcs'],
+                ['Dry Clean - White Pants', getDCVal('dcWhitePants'), 21.99, 'pcs'],
+                ['Dry Clean - Skirt', getDCVal('dcSkirt'), 19.99, 'pcs'],
+                ['Dry Clean - Shorts', getDCVal('dcShorts'), 17.99, 'pcs'],
+                ['Dry Clean - Dress', getDCVal('dcDress'), 44.99, 'pcs'],
+                ['Dry Clean - Evening/Lined Dress', getDCVal('dcEveningDress'), 49.99, 'pcs'],
+                ['Dry Clean - 2 Piece Suit', getDCVal('dcSuit2P'), 44.99, 'pcs'],
+                ['Dry Clean - 3 Piece Suit', getDCVal('dcSuit3P'), 54.99, 'pcs'],
+                ['Dry Clean - Blazer', getDCVal('dcBlazer'), 29.99, 'pcs'],
+                ['Dry Clean - Jacket', getDCVal('dcJacket'), 34.99, 'pcs'],
+                ['Dry Clean - Vest', getDCVal('dcVest'), 14.99, 'pcs'],
+                ['Dry Clean - 3/4 Coat (Unlined)', getDCVal('dcCoat34Unlined'), 39.99, 'pcs'],
+                ['Dry Clean - 3/4 Coat (Lined)', getDCVal('dcCoat34Lined'), 44.99, 'pcs'],
+                ['Dry Clean - Down Jacket', getDCVal('dcDownJacket'), 49.99, 'pcs'],
+                ['Dry Clean - Down Coat', getDCVal('dcDownCoat'), 99.99, 'pcs'],
+                ['Dry Clean - Blanket', getDCVal('dcBlanket'), 44.99, 'pcs'],
+                ['Dry Clean - Comforter', getDCVal('dcComforter'), 69.99, 'pcs'],
+                ['Dry Clean - Bed Skirt', getDCVal('dcBedSkirt'), 39.99, 'pcs'],
+                ['Dry Clean - Sheet', getDCVal('dcSheet'), 29.99, 'pcs'],
+                ['Dry Clean - Pillow / Cushion', getDCVal('dcPillow'), 12.99, 'pcs'],
+                ['Dry Clean - Towel', getDCVal('dcTowel'), 19.99, 'pcs']
+            ];
+        } else {
+            const cleaningSelect = document.getElementById('cleaningType');
+            const packageName = cleaningSelect.options[cleaningSelect.selectedIndex].dataset.name;
+            const { totalHours, baseRate } = calculateCleaningHours();
+            extras = [[`House Cleaning - ${packageName}`, totalHours, baseRate, 'hrs']];
+        }
 
         if (!phone) {
             alert('Please enter your phone number.');
-            document.getElementById('custPhone').focus();
+            document.getElementById('customerPhone').focus();
             return;
         }
 
-        if (isPickup && !address) {
+        if (isPickup && currentMainService !== 'cleaning' && !address) {
             alert('Please enter your Pick Up Street Address.');
             document.getElementById('pickupAddress').focus();
             return;
         }
 
-        const date = isPickup ? document.getElementById('bookDate').value : new Date().toISOString().split('T')[0];
-        const time = isPickup ? document.getElementById('bookTime').value : 'Self Drop-off (08:00 AM - 11:30 PM)';
+        const date = isPickup || currentMainService === 'cleaning' ? document.getElementById('bookDate').value : new Date().toISOString().split('T')[0];
+        const time = isPickup || currentMainService === 'cleaning' ? document.getElementById('bookTime').value : 'Self Drop-off (08:00 AM - 11:30 PM)';
+        if (!validateBookingDate(date)) return;
         const receiptNumber = Math.floor(10000 + Math.random() * 90000);
         const today = new Date().toISOString().split('T')[0];
 
         const readyTimeText = document.getElementById('liveReadyTime').innerText;
 
-        let serviceDescription = isPickup ? `Pick Up & Delivery (${cityName})` : 'Self Drop-off (Store Hours: 08:00 AM - 11:30 PM)';
-        if (isPickup && pickupCost === 0 && isNFFree) serviceDescription += ' [Free First Pick-up - Niagara Falls Resident]';
+        const mainServiceLabel = currentMainService === 'laundry'
+            ? 'Laundry & Care'
+            : currentMainService === 'drycleaning' ? 'Dry Cleaning' : 'House / Commercial Cleaning';
+        let serviceDescription = currentMainService === 'cleaning'
+            ? mainServiceLabel
+            : `${mainServiceLabel} - ${isPickup ? `Pick Up & Delivery (${cityName})` : 'Self Drop-off (Store Hours: 08:00 AM - 11:30 PM)'}`;
+        if (isPickupService && pickupCost === 0 && isNFFree) serviceDescription += ' [Free First Pick-up - Niagara Falls Resident]';
         let metaHtml = `Receipt No: ${receiptNumber} | Date: ${today}<br><b>Customer:</b> ${escapeHtml(name)} (${escapeHtml(phone)})<br><b>Service Type:</b> ${escapeHtml(serviceDescription)}<br>`;
-        if (isPickup) {
+        if (currentMainService === 'cleaning') {
+            metaHtml += `<b>Scheduled Service:</b> ${escapeHtml(date)} at ${escapeHtml(time)}<br>`;
+        } else if (isPickup) {
             metaHtml += `<b>Pick Up Address:</b> ${escapeHtml(address)}, ${escapeHtml(cityName)}<br><b>Scheduled Pick Up:</b> ${escapeHtml(date)} at ${escapeHtml(time)}<br>`;
         } else {
             metaHtml += '<b>Instruction:</b> Follow instructions on store door<br>';
@@ -951,39 +1297,37 @@
         metaHtml += `<b>Payment:</b> ${escapeHtml(paymentMethod)}<br><b style="color: #1d4ed8;">Approximate Ready Time:</b> ${escapeHtml(readyTimeText)}`;
         document.getElementById('receiptMeta').innerHTML = metaHtml;
         let detailsHtml = '';
-        const wash = 10 + (normalizedWeight > 10 ? Math.ceil((normalizedWeight - 10) / 5) * 5 : 0);
-        if (isWeightUnknown) {
-            detailsHtml += `<div class="receipt-item" style="color: #b45309; font-weight: bold;"><span>Base wash (Weight: ${escapeHtml(weightInputValue || 'Unknown')})</span><span>~$${wash.toFixed(2)} (Est.)</span></div>`;
-        } else {
-            detailsHtml += receiptItem(`Base wash (${normalizedWeight} lbs)`, wash);
+        if (currentMainService === 'laundry') {
+            if (isWeightUnknown) {
+                detailsHtml += `<div class="receipt-item" style="color: #b45309; font-weight: bold;"><span>Base wash (Weight: ${escapeHtml(weightInputValue || 'Unknown')})</span><span>~$${wash.toFixed(2)} (Est.)</span></div>`;
+            } else {
+                detailsHtml += receiptItem(`Base wash (${normalizedWeight} lbs)`, wash);
+            }
         }
-        if (isPickup) {
+        if (isPickupService) {
             detailsHtml += pickupCost > 0
                 ? receiptItem(`Pick up & delivery (${cityName})`, pickupCost)
                 : `<div class="receipt-item" style="color: #166534;"><span>Pick up & delivery (${escapeHtml(cityName)} - First Free Promo)</span><span>$0.00</span></div>`;
         }
 
-        const multiplier = Math.ceil(normalizedWeight / 5);
         let servicesTotal = 0;
-        document.querySelectorAll('.srv:checked').forEach(service => {
-            const price = parseFloat(service.value) * multiplier;
-            servicesTotal += price;
-            detailsHtml += receiptItem(service.dataset.name, price);
-        });
+        if (currentMainService === 'laundry') {
+            const multiplier = Math.ceil(normalizedWeight / 5);
+            document.querySelectorAll('.srv:checked').forEach(service => {
+                const price = parseFloat(service.value) * multiplier;
+                servicesTotal += price;
+                detailsHtml += receiptItem(service.dataset.name, price);
+            });
 
-        if (isPetOwner) {
-            const petHairPrice = 2 * multiplier;
-            servicesTotal += petHairPrice;
-            detailsHtml += `<div class="receipt-item" style="color: #991b1b; font-weight: bold;"><span>Mandatory Pet Hair Removal</span><span>$${petHairPrice.toFixed(2)}</span></div>`;
+            if (isPetOwner) {
+                const petHairPrice = 2 * multiplier;
+                servicesTotal += petHairPrice;
+                detailsHtml += `<div class="receipt-item" style="color: #991b1b; font-weight: bold;"><span>Mandatory Pet Hair Removal</span><span>$${petHairPrice.toFixed(2)}</span></div>`;
+            }
+            if (isHangDry) {
+                detailsHtml += `<div class="receipt-item" style="color: #166534;"><span>Hang Dry (Free / +2 Days)</span><span>$0.00</span></div>`;
+            }
         }
-        if (isHangDry) {
-            detailsHtml += `<div class="receipt-item" style="color: #166534;"><span>Hang Dry (Free / +2 Days)</span><span>$0.00</span></div>`;
-        }
-
-        const extras = [
-            ['Ironing', iron, 4, 'pcs'], ['Hangers', hangers, 1, 'pcs'], ['Shoe pair', shoes, 10, 'pcs'],
-            ['Duvet single', single, 15, 'pcs'], ['Duvet queen', queen, 20, 'pcs'], ['Duvet king', king, 25, 'pcs']
-        ];
         let extrasTotal = 0;
         extras.forEach(([label, quantity, price, unit]) => {
             if (quantity > 0) {
