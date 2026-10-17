@@ -76,7 +76,7 @@
             font-size: 13px;
             color: #334155;
         }
-        input[type="text"], input[type="number"], input[type="tel"], select, textarea, input[type="date"] {
+        input[type="text"], input[type="email"], input[type="number"], input[type="tel"], select, textarea, input[type="date"] {
             width: 100%;
             padding: 10px;
             border: 1px solid #cbd5e1;
@@ -503,13 +503,21 @@
 
     <div class="section-title">1. Customer Information & Service Type</div>
     <div class="group">
-        <label for="custName">Customer Full Name</label>
-        <input type="text" id="custName" placeholder="e.g. John Doe">
+        <label for="custName">Customer Full Name <span style="color: #dc2626;">*</span></label>
+        <input type="text" id="custName" placeholder="e.g. John Doe" autocomplete="name" required>
     </div>
 
     <div class="group">
-        <label for="customerPhone">Phone Number</label>
-        <input type="tel" id="customerPhone" placeholder="(123) 456-7890">
+        <label for="custEmail">Email Address <span style="color: #dc2626;">*</span></label>
+        <input type="email" id="custEmail" placeholder="e.g. john@example.com" autocomplete="email" required>
+    </div>
+
+    <div class="group">
+        <label for="custPhone">Phone Number <span style="color: #dc2626;">*</span></label>
+        <div style="display: flex; gap: 8px;">
+            <input type="text" id="countryCode" placeholder="+1" value="+1" aria-label="Phone country code" autocomplete="tel-country-code" required style="width: 25%; font-weight: bold; text-align: center;">
+            <input type="tel" id="custPhone" placeholder="(289) 555-0199" autocomplete="tel-national" required style="width: 75%;">
+        </div>
     </div>
 
     <div class="section-title">3. Select Main Service Category</div>
@@ -587,9 +595,9 @@
         <div class="group">
             <label for="bookTime" id="bookingTimeLabel">Booking Time Slot (Daily: 10:00 AM - 07:00 PM)</label>
             <select id="bookTime" onchange="updateApproxReadyTime()">
-                <option>10:00 AM</option><option>11:00 AM</option><option>11:30 AM</option><option>12:00 PM</option>
-                <option>01:00 PM</option><option>02:00 PM</option><option>03:00 PM</option><option>04:00 PM</option>
-                <option>05:00 PM</option><option>06:00 PM</option><option>07:00 PM (Latest)</option>
+                <option>10:00 AM</option><option>10:30 AM</option><option>11:00 AM</option><option>11:30 AM</option><option>12:00 PM</option><option>12:30 PM</option>
+                <option>01:00 PM</option><option>01:30 PM</option><option>02:00 PM</option><option>02:30 PM</option><option>03:00 PM</option><option>03:30 PM</option>
+                <option>04:00 PM</option><option>04:30 PM</option><option>05:00 PM</option><option>05:30 PM</option><option>06:00 PM</option><option>06:30 PM</option><option>07:00 PM (Latest)</option>
             </select>
         </div>
         <div id="readyTimeSection" style="background: #eef2ff; padding: 10px; border-radius: 6px; border: 1px solid #c7d2fe; margin-bottom: 12px;">
@@ -672,6 +680,21 @@
             <b>Note:</b> Weight selected above is an initial estimate. Regardless of your selection, all laundry will be weighed upon arrival using our official scale, and your final payment details will be adjusted accordingly.
         </div>
     </div>
+    <div class="group" style="background: #eff6ff; border: 2px solid #2563eb; padding: 12px; border-radius: 8px; margin-top: 14px; position: relative;">
+        <div style="position: absolute; top: -10px; right: 12px; background: #2563eb; color: white; font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 12px; text-transform: uppercase;">
+            Recommended
+        </div>
+        <label style="color: #1e3a8a; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: space-between; margin: 0; cursor: pointer;">
+            <span style="display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="separateWash" style="width: 18px; height: 18px; cursor: pointer;">
+                🧺 Separate Wash Request (Lights &amp; Darks)
+            </span>
+            <span style="font-size: 13px; font-weight: bold; color: #1d4ed8;">+$7.00 / 10 lbs</span>
+        </label>
+        <div style="font-size: 11px; color: #475569; margin-top: 6px; margin-left: 26px; line-height: 1.4;">
+            Lights and darks will be sorted and washed in separate machines ($7.00 added per 10 lbs or part thereof).
+        </div>
+    </div>
     <div class="group" style="background: #f0fdf4; padding: 10px; border-radius: 6px; border: 1px solid #bbf7d0;">
         <label style="color: #166534; display: flex; align-items: center; gap: 8px; margin: 0; cursor: pointer;">
             <input type="checkbox" id="hangDry" onchange="updateApproxReadyTime()"> Hang Dry (Free, but requires +2 days turnaround time)
@@ -692,8 +715,27 @@
         <label><input type="checkbox" class="srv" value="5" data-name="Hypoallergenic"> Hypoallergenic · $5</label>
         <label><input type="checkbox" class="srv" value="3" data-name="Wrinkle release"> Wrinkle release · $3</label>
     </div>
-    <div class="service-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom: 12px;">
-        <div><label for="iron">Ironing · $4</label><input type="number" id="iron" value="0" min="0"></div>
+    <div class="group" style="background: #f0fdf4; border: 1.5px solid #22c55e; padding: 12px; border-radius: 8px; margin-top: 12px;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <label style="color: #15803d; font-weight: bold; font-size: 13px; display: flex; align-items: center; gap: 8px; margin: 0; cursor: pointer;">
+                <input type="checkbox" id="enableIroning" style="width: 18px; height: 18px; cursor: pointer;" onchange="toggleIroning(this)">
+                👔 Ironing Service
+                <span class="badge" style="background: #059669; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold;">Best Choice</span>
+            </label>
+            <span style="font-size: 12px; font-weight: bold; color: #166534;">$4.00 / piece</span>
+        </div>
+        <div id="ironingQuantityBox" style="display: none; margin-top: 10px; padding-top: 8px; border-top: 1px dashed #bbf7d0;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <label for="iron" style="font-size: 12px; color: #374151; margin: 0;">Number of garments:</label>
+                <input type="number" id="iron" value="1" min="1" style="width: 80px; font-weight: bold;">
+                <span style="font-size: 11px; color: #6b7280;">pcs</span>
+            </div>
+        </div>
+        <div style="font-size: 10.5px; color: #4b5563; margin-top: 8px; font-style: italic; line-height: 1.3; border-top: 1px solid #dcfce7; padding-top: 6px;">
+            * Excludes suits, formalwear, and delicate/special dresses. For these items, please select the <b>Dry Cleaning</b> option.
+        </div>
+    </div>
+    <div class="service-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 12px;">
         <div><label for="hangers">Hangers · $1</label><input type="number" id="hangers" value="0" min="0"></div>
         <div><label for="shoes">Shoes · $10</label><input type="number" id="shoes" value="0" min="0"></div>
     </div>
@@ -807,6 +849,10 @@
         <input type="number" id="customTipInput" class="custom-tip-input" min="0" step="0.5" placeholder="Or enter custom amount ($)" oninput="handleCustomTipInput()">
     </div>
     <button class="book-btn" type="button" onclick="calculateAndBook()">Confirm & Generate Receipt</button>
+
+    <div id="bookingConfirmationAlert" role="status" aria-live="polite" style="display: none; background: #dcfce7; border: 2px solid #22c55e; color: #15803d; padding: 16px; border-radius: 8px; margin-top: 15px; font-weight: bold; text-align: center; font-size: 14px; line-height: 1.5;">
+        YOUR BOOKING HAS BEEN CREATED! NO FURTHER ACTION IS REQUIRED. OUR TEAM WILL CONTACT YOU SHORTLY FOR CONFIRMATION.
+    </div>
 
     <div id="result" aria-live="polite">
         <div class="receipt-header">
@@ -971,6 +1017,14 @@
         element.classList.add('active');
     }
 
+    function toggleIroning(checkbox) {
+        const quantityBox = document.getElementById('ironingQuantityBox');
+        const ironInput = document.getElementById('iron');
+        quantityBox.style.display = checkbox.checked ? 'block' : 'none';
+        if (checkbox.checked && parseInt(ironInput.value, 10) <= 0) ironInput.value = 1;
+        calculateAndBook();
+    }
+
     function syncVisualCards() {
         const val = document.getElementById('weightInput').value.trim();
         document.querySelectorAll('.weight-card').forEach(card => {
@@ -1024,7 +1078,8 @@
     }
 
     function parseTimeToFloat(time) {
-        const [clock, meridiem] = time.split(' ');
+        const cleanTime = time.replace(/\s*\(.*?\)/, '').trim();
+        const [clock, meridiem] = cleanTime.split(' ');
         const [hours, minutes] = clock.split(':').map(Number);
         let hour = hours;
         if (meridiem === 'PM' && hour < 12) hour += 12;
@@ -1049,8 +1104,9 @@
 
     function getDefaultBookingTimeOptions() {
         return [
-            '10:00 AM', '11:00 AM', '11:30 AM', '12:00 PM', '01:00 PM',
-            '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM (Latest)'
+            '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM',
+            '01:00 PM', '01:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM',
+            '04:00 PM', '04:30 PM', '05:00 PM', '05:30 PM', '06:00 PM', '06:30 PM', '07:00 PM (Latest)'
         ];
     }
 
@@ -1143,14 +1199,17 @@
     initDateAndTimes();
     document.getElementById('bookDate').addEventListener('change', filterAvailableTimeSlots);
     document.getElementById('bookDate').addEventListener('change', validateCleaningDate);
-    document.getElementById('customerPhone').addEventListener('input', checkPromoEligibility);
+    document.getElementById('custPhone').addEventListener('input', checkPromoEligibility);
+    document.getElementById('countryCode').addEventListener('input', checkPromoEligibility);
     document.getElementById('pickupAddress').addEventListener('input', checkPromoEligibility);
     updateBookingDateRestrictions();
     updateUIForSelectedService();
     updateApproxReadyTime();
 
     function checkPromoEligibility() {
-        const phone = document.getElementById('customerPhone').value.trim().replace(/\D/g, '');
+        const countryCode = document.getElementById('countryCode').value.trim();
+        const formattedCountryCode = countryCode.startsWith('+') ? countryCode : `+${countryCode}`;
+        const phone = `${formattedCountryCode}${document.getElementById('custPhone').value.trim()}`.replace(/\D/g, '');
         const address = document.getElementById('pickupAddress').value.trim().toLowerCase();
         const promoCheckbox = document.getElementById('nfFreePickup');
         const errorMsg = document.getElementById('promoErrorMsg');
@@ -1176,7 +1235,9 @@
         const isNFFree = isPickup && isNiagaraFalls && document.getElementById('nfFreePickup').checked;
         if (!isNFFree) return;
 
-        const phone = document.getElementById('customerPhone').value.trim().replace(/\D/g, '');
+        const countryCode = document.getElementById('countryCode').value.trim();
+        const formattedCountryCode = countryCode.startsWith('+') ? countryCode : `+${countryCode}`;
+        const phone = `${formattedCountryCode}${document.getElementById('custPhone').value.trim()}`.replace(/\D/g, '');
         const address = document.getElementById('pickupAddress').value.trim().toLowerCase();
         const usedPromos = JSON.parse(localStorage.getItem('wildrose_used_promos') || '[]');
         usedPromos.push({ phone, address, date: new Date().toISOString() });
@@ -1184,8 +1245,34 @@
     }
 
     function calculateAndBook() {
-        const name = document.getElementById('custName').value.trim() || 'Valued Customer';
-        const phone = document.getElementById('customerPhone').value.trim();
+        const name = document.getElementById('custName').value.trim();
+        const emailInput = document.getElementById('custEmail');
+        const email = emailInput.value.trim();
+        const countryCodeInput = document.getElementById('countryCode');
+        const countryCode = countryCodeInput.value.trim();
+        const localPhone = document.getElementById('custPhone').value.trim();
+        if (!name) {
+            alert('Please enter your full name.');
+            document.getElementById('custName').focus();
+            return;
+        }
+        if (!email || !emailInput.checkValidity()) {
+            alert('Please enter a valid email address.');
+            emailInput.focus();
+            return;
+        }
+        if (!countryCode) {
+            alert('Please enter your country code (e.g., +1).');
+            countryCodeInput.focus();
+            return;
+        }
+        if (!localPhone) {
+            alert('Please enter your phone number.');
+            document.getElementById('custPhone').focus();
+            return;
+        }
+        const formattedCountryCode = countryCode.startsWith('+') ? countryCode : `+${countryCode}`;
+        const phone = `${formattedCountryCode} ${localPhone}`;
         const isPickup = document.getElementById('typePickup').checked;
         const isPickupService = isPickup && currentMainService !== 'cleaning';
         const citySelect = document.getElementById('pickupCity');
@@ -1211,14 +1298,15 @@
             normalizedWeight = isWeightUnknown ? 10 : weight;
             wash = 10 + (normalizedWeight > 10 ? Math.ceil((normalizedWeight - 10) / 5) * 5 : 0);
 
-            const iron = Math.max(0, parseInt(document.getElementById('iron').value, 10) || 0);
+            const isIroningEnabled = document.getElementById('enableIroning')?.checked || false;
+            const ironPcs = isIroningEnabled ? Math.max(1, parseInt(document.getElementById('iron')?.value, 10) || 1) : 0;
             const hangers = Math.max(0, parseInt(document.getElementById('hangers').value, 10) || 0);
             const shoes = Math.max(0, parseInt(document.getElementById('shoes').value, 10) || 0);
             const single = Math.max(0, parseInt(document.getElementById('dvS').value, 10) || 0);
             const queen = Math.max(0, parseInt(document.getElementById('dvQ').value, 10) || 0);
             const king = Math.max(0, parseInt(document.getElementById('dvK').value, 10) || 0);
             extras = [
-                ['Ironing', iron, 4, 'pcs'], ['Hangers', hangers, 1, 'pcs'], ['Shoe pair', shoes, 10, 'pcs'],
+                ['Ironing Service', ironPcs, 4, 'pcs'], ['Hangers', hangers, 1, 'pcs'], ['Shoe pair', shoes, 10, 'pcs'],
                 ['Duvet single', single, 15, 'pcs'], ['Duvet queen', queen, 20, 'pcs'], ['Duvet king', king, 25, 'pcs']
             ];
         } else if (currentMainService === 'drycleaning') {
@@ -1259,12 +1347,6 @@
             extras = [[`House Cleaning - ${packageName}`, totalHours, baseRate, 'hrs']];
         }
 
-        if (!phone) {
-            alert('Please enter your phone number.');
-            document.getElementById('customerPhone').focus();
-            return;
-        }
-
         if (isPickup && currentMainService !== 'cleaning' && !address) {
             alert('Please enter your Pick Up Street Address.');
             document.getElementById('pickupAddress').focus();
@@ -1286,7 +1368,7 @@
             ? mainServiceLabel
             : `${mainServiceLabel} - ${isPickup ? `Pick Up & Delivery (${cityName})` : 'Self Drop-off (Store Hours: 08:00 AM - 11:30 PM)'}`;
         if (isPickupService && pickupCost === 0 && isNFFree) serviceDescription += ' [Free First Pick-up - Niagara Falls Resident]';
-        let metaHtml = `Receipt No: ${receiptNumber} | Date: ${today}<br><b>Customer:</b> ${escapeHtml(name)} (${escapeHtml(phone)})<br><b>Service Type:</b> ${escapeHtml(serviceDescription)}<br>`;
+        let metaHtml = `Receipt No: ${receiptNumber} | Date: ${today}<br><b>Customer:</b> ${escapeHtml(name)}<br><b>Email:</b> ${escapeHtml(email)}<br><b>Phone:</b> ${escapeHtml(phone)}<br><b>Service Type:</b> ${escapeHtml(serviceDescription)}<br>`;
         if (currentMainService === 'cleaning') {
             metaHtml += `<b>Scheduled Service:</b> ${escapeHtml(date)} at ${escapeHtml(time)}<br>`;
         } else if (isPickup) {
@@ -1327,6 +1409,11 @@
             if (isHangDry) {
                 detailsHtml += `<div class="receipt-item" style="color: #166534;"><span>Hang Dry (Free / +2 Days)</span><span>$0.00</span></div>`;
             }
+            if (document.getElementById('separateWash')?.checked) {
+                const separateUnits = Math.ceil(normalizedWeight / 10);
+                const separateFee = separateUnits * 7;
+                extras.push([`Separate Wash (${separateUnits}x 10lb units)`, 1, separateFee, 'service']);
+            }
         }
         let extrasTotal = 0;
         extras.forEach(([label, quantity, price, unit]) => {
@@ -1363,12 +1450,21 @@
                 'Order Details': plainTextReceipt
             })
         })
-            .then(response => response.json().then(data => ({ response, data })))
-            .then(({ response }) => {
-                if (response.ok) savePromoUsage();
-                console.log('Booking email sent successfully!');
+            .then(response => {
+                if (!response.ok) throw new Error('Booking submission failed.');
+                return response.json();
             })
-            .catch(error => console.error('Error sending email:', error));
+            .then(() => {
+                savePromoUsage();
+                const confirmation = document.getElementById('bookingConfirmationAlert');
+                confirmation.style.display = 'block';
+                confirmation.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                alert('YOUR BOOKING HAS BEEN CREATED! NO FURTHER ACTION IS REQUIRED. OUR TEAM WILL CONTACT YOU SHORTLY FOR CONFIRMATION.');
+            })
+            .catch(error => {
+                console.error('Error sending email:', error);
+                alert('We could not submit your booking right now. Please try again.');
+            });
     }
 
     function receiptItem(label, value) {
